@@ -17,14 +17,13 @@ FILES = deque()
 WALL = "==============="
 END_OF_REQUEST = "================ END ================"
 
-SERV_DIR = "..\\Server_Directory\\"
-
 
 class Server:
     
-    def __init__(self, host, port):
+    def __init__(self, host,port,serv_dir):
         self.host_ = host
         self.port_ = port
+        self.serv_dir_ = serv_dir
         self.socket_ = self.__create_socket__(self.host_, self.port_)
         self.client_ = None
         self.client_req_ = ""
@@ -62,16 +61,24 @@ class Server:
                 self.__RENAME__()
             elif self.__dec__(self.client_req_, 'str') == "REPLACE":
                 self.__REPLACE__()
+            elif self.__dec__(self.client_req_, 'str') == "CREATE":
+                self.__CREATE__()
+            elif self.__dec__(self.client_req_, 'str') == "ERASE":
+                self.__ERASE__()
+            elif self.__dec__(self.client_req_, 'str') == "DELETE":
+                self.__DELETE__()
 
 
-
+    def __check_server_dir__(self,filename):
+        return os.path.isfile(self.serv_dir_+filename)
 
             
     def __READ__(self):
         filename = self.__receive__()
         print("\n\t%s file: %s\n" % (self.__dec__(self.client_req_, 'str'),
                                      self.__dec__(filename, 'str')))
-        if os.path.isfile(self.__dec__(filename, 'str')):
+        if self.__check_server_dir__(
+                self.__dec__(filename, 'str')):
             self.__send__(1)
 
             self.server_msg_ = "You requested to:\n\n%s %s %s\n\tfile: %s" % (
@@ -92,7 +99,8 @@ class Server:
                 END_OF_REQUEST)
             self.__send__(self.server_msg_)
             
-            with open(self.__dec__(filename, 'str')) as f:
+            with open(
+                    self.serv_dir_+self.__dec__(filename, 'str')) as f:
                 content = f.read()
                 if self.__dec__(offset, 'int') >= len(content):
                     self.server_msg_ = "Your \"offset\" exceeded the length of file content"
@@ -119,7 +127,9 @@ class Server:
         filename = self.__receive__()
         print("\n\t%s file: %s\n" % (self.__dec__(self.client_req_, 'str'),
                                      self.__dec__(filename, 'str')))
-        if os.path.isfile(self.__dec__(filename, 'str')):
+        # if os.path.isfile(self.__dec__(filename, 'str')):
+        if self.__check_server_dir__(
+                self.__dec__(filename, 'str')):
             self.__send__(1)
 
             self.server_msg_ = "You requested to:\n\n%s %s %s\n\tfile: %s" % (
@@ -140,7 +150,8 @@ class Server:
                 END_OF_REQUEST)
             self.__send__(self.server_msg_)
 
-            with open(self.__dec__(filename, 'str')) as f:
+            with open(
+                    self.serv_dir_+self.__dec__(filename, 'str')) as f:
                 content = f.read()
                 if self.__dec__(offset, 'int') >= len(content):
                     self.server_msg_ = "Your \"offset\" exceeded the length of file content"
@@ -149,8 +160,9 @@ class Server:
                         content[:self.__dec__(offset, 'int')],
                         self.__dec__(b2w,'str'),
                         content[self.__dec__(offset, 'int'):])
-                    with open(self.__dec__(filename, 'str'), 'w') as f:
-                        file = f.write(self.server_msg_)
+                    with open(
+                            self.serv_dir_+self.__dec__(filename, 'str'), 'w') as f:
+                        f.write(self.server_msg_)
                         f.close()
                     
             self.__send__(self.server_msg_)
@@ -170,7 +182,9 @@ class Server:
         filename = self.__receive__()
         print("\n\t%s file: %s\n" % (self.__dec__(self.client_req_, 'str'),
                                      self.__dec__(filename, 'str')))
-        if os.path.isfile(self.__dec__(filename, 'str')):
+        # if os.path.isfile(self.__dec__(filename, 'str')):
+        if self.__check_server_dir__(
+                self.__dec__(filename, 'str')):
             self.__send__(1)
 
             self.server_msg_ = "You requested to:\n\n%s %s %s\n\tfile: %s" % (
@@ -234,14 +248,19 @@ class Server:
 
 
 
-    # =============================================================== #
 
 
+
+
+
+    # Non-Idempotent
     def __RENAME__(self):
         filename = self.__receive__()
         print("\n\t%s file: %s\n" % (self.__dec__(self.client_req_, 'str'),
                                      self.__dec__(filename, 'str')))
-        if os.path.isfile(self.__dec__(filename, 'str')):
+        # if os.path.isfile(self.__dec__(filename, 'str')):
+        if self.__check_server_dir__(
+                self.__dec__(filename, 'str')):
             self.__send__(1)
 
             self.server_msg_ = "You requested to:\n\n%s %s %s\n\tfile: %s" % (
@@ -267,7 +286,9 @@ class Server:
                 self.server_msg_ = "The file must be the same type."
 
             else:
-                os.rename(self.__dec__(filename, 'str'),self.__dec__(name, 'str'))
+                os.rename(
+                    self.serv_dir_+self.__dec__(filename, 'str'),
+                    self.serv_dir_+self.__dec__(name, 'str'))
 
                 self.server_msg_ = "%s Rename Successful %s" % (
                     WALL, WALL)
@@ -283,12 +304,14 @@ class Server:
 
 
 
-        
+    # Idempotent
     def __REPLACE__(self):
         filename = self.__receive__()
         print("\n\t%s file: %s\n" % (self.__dec__(self.client_req_, 'str'),
                                      self.__dec__(filename, 'str')))
-        if os.path.isfile(self.__dec__(filename, 'str')):
+        # if os.path.isfile(self.__dec__(filename, 'str')):
+        if self.__check_server_dir__(
+                self.__dec__(filename, 'str')):
             self.__send__(1)
 
             self.server_msg_ = "You requested to:\n\n%s %s %s\n\tfile: %s" % (
@@ -309,7 +332,8 @@ class Server:
                 END_OF_REQUEST)
             self.__send__(self.server_msg_)
 
-            with open(self.__dec__(filename, 'str')) as f:
+            with open(
+                    self.serv_dir_+self.__dec__(filename, 'str')) as f:
                 content = f.read()
                 if self.__dec__(offset, 'int') >= len(content):
                     self.server_msg_ = "Your \"offset\" exceeded the length of file content"
@@ -320,8 +344,9 @@ class Server:
                         content[:self.__dec__(offset, 'int')],
                         self.__dec__(b2w,'str'),
                         content[last_idx:])
-                    with open(self.__dec__(filename, 'str'), 'w') as f:
-                        file = f.write(self.server_msg_)
+                    with open(
+                            self.serv_dir_+self.__dec__(filename, 'str'), 'w') as f:
+                        f.write(self.server_msg_)
                         f.close()
                     
             self.__send__(self.server_msg_)
@@ -334,13 +359,79 @@ class Server:
         print("----------------------- END -----------------------")
 
 
+
+
     
+
+
+    # Idempotent
     def __CREATE__(self):
-        pass
+        filename = self.__receive__()
+        print("\n\t%s file: %s\n" % (self.__dec__(self.client_req_, 'str'),
+                                     self.__dec__(filename, 'str')))
+        file_type_idx = self.__dec__(filename,'str').rfind('.')
+        file_type = self.__dec__(filename,'str')[file_type_idx:]
+        if file_type != ".txt":
+            self.__send__(0)
+            self.server_msg_ = "The file type needs to be \".txt\".\n\
+Convertig file to \".txt\"...\n"
+            self.__send__(self.server_msg_)
+            filename = self.__dec__(filename,'str')+".txt"
+            content = self.__receive__()
+            self.__create_file__(
+                    self.serv_dir_+filename,self.__dec__(content,'str'))
+            self.server_msg_ = "%s Created Successfully %s" % (
+                    WALL, WALL)
+            self.__send__(self.server_msg_)
+
+        # elif os.path.isfile(self.__dec__(filename, 'str')):
+        elif self.__check_server_dir__(
+            self.__dec__(filename, 'str')):
+            self.__send__(2)
+            
+            self.server_msg_ = "The file \"%s\" already exists in the server directory.\n\
+Do you want to overwrite it[Y/n]: " % (self.__dec__(filename, 'str'))
+            self.__send__(self.server_msg_)
+            answer = self.__receive__()
+            if self.__dec__(answer,'str') == ""\
+            or self.__dec__(answer,'str').lower() == 'y'\
+            or self.__dec__(answer,'str').lower() == 'yes':
+                content = self.__receive__()
+                self.__create_file__(
+                    self.serv_dir_+self.__dec__(filename,'str'),self.__dec__(content,'str'))
+                self.server_msg_ = "%s Created Successfully %s" % (
+                    WALL, WALL)
+                self.__send__(self.server_msg_)
+            else:
+                self.server_msg_ = "\n%s File NOT Created %s" % (
+                    WALL,WALL)
+                self.__send__(self.server_msg_)
+        else:
+            self.__send__(1)
+            content = self.__receive__()
+            self.__create_file__(
+                self.serv_dir_+self.__dec__(filename,'str'),self.__dec__(content,'str'))
+            self.server_msg_ = "%s Created Successfully %s" % (
+                    WALL, WALL)
+            self.__send__(self.server_msg_)
+        print("----------------------- END -----------------------")
+            
+        
+        
+        
+        
+        
+        
+     # =============================================================== #       
+        
+    # non-idempotent    
     def __ERASE__(self):
         pass
+
+    # idempotent
+    def __DELETE__(self):
+        pass
     
- 
     # =============================================================== #
 
 
@@ -354,11 +445,20 @@ class Server:
                 if os.path.isdir(c):
                     print(c)
             elif filetype == "others":
-                if os.path.isfile(c):
+                # if os.path.isfile(c):
+                if self.__check_server_dir__(c):
                     if ".txt" not in str(c):
                         print(c)
             else:
                 print(c)
+
+
+
+
+    def __create_file__(self,filename,content):
+        new_file = open(filename, 'w')
+        new_file.write(content)
+        new_file.close()
 
 
 
@@ -383,21 +483,22 @@ class Server:
             return data.decode('utf-8')
         elif t == "bool":
             return bool(data.decode('utf-8'))
+        
 
-
-
-
-            
-def main():
-    server = Server(socket.gethostname(), 9999)
-    server.__start__()
-
-
-
-
-            
+    
+    
+    
+    
+    
+    
 if __name__ == "__main__":
-    main()
-        
-        
-        
+
+    serv_dir = r"C:\Users\CSY\Desktop\Spring 2020\git\Remote_File_Server\Server_Directory\\"
+    serv = Server(socket.gethostname(),9999,serv_dir)
+    serv.__start__()
+    
+    
+    
+    
+    
+    
