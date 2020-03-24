@@ -1,0 +1,4 @@
+Client: 127.0.0.1	Port: 9999	Request: WRITE file "hello.txt" Succeed	Time: 2020-03-24 21:55:05
+Client: 127.0.0.1	Port: 9999	Request: WRITE file "hello.txt" Succeed	Time: 2020-03-24 21:55:16
+Client: 127.0.0.1	Port: 9999	Request: WRITE file "hello.txt" Failed	Time: 2020-03-24 21:55:58
+Client: 127.0.0.1	Port: 9999	Request: READ file "hello.txt" Succeed	Time: 2020-03-24 21:56:33
