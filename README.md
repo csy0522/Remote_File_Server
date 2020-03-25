@@ -18,6 +18,7 @@ pip install fcache
 ## Running the tests
 
 - The description of each function will be located on top of them. Please read them before running to understand the overall structure of the project. <br/>
+- **This project is currently under development. It will be ready soon...**<br/>
 - Description **To Be Continued...**
 
 ## Deployment
