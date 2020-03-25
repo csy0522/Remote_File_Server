@@ -38,3 +38,7 @@ Choose your own Server Directory & transfer files remotely.
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
+
+## Acknowledgements
+
+* **Thomas Roten** - [tsroten](https://pypi.org/user/tsroten/)
