@@ -41,4 +41,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgements
 
-* **Thomas Roten** - [tsroten](https://pypi.org/user/tsroten/)
+* **Thomas Roten** - [tsroten](https://pypi.org/project/fcache/)
