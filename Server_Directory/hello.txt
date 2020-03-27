@@ -1,3 +1,1 @@
-Hello World
-Hello NTU
-Hello Singapore
+hello_world

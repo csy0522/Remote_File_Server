@@ -73,6 +73,7 @@ class Server():
 
 
 
+
     def __READ__(self):
         filename = self.__receive__()
         print("\n\t%s file: %s\n" % (self.__unmarshall__(self.client_req_),
@@ -239,21 +240,14 @@ class Server():
             ori_file = open(self.serv_dir_+self.__unmarshall__(filename))
             ori_content = ori_file.read()
             ori_file.close()
-            
+
             self.__monitoring__(filename,ori_content,now,des)
-            
-            self.__record__(self.client_[0],str(self.port_),
-                self.__unmarshall__(self.client_req_),
-                self.__unmarshall__(filename),success=True)
             
 #########################################################
         else:
             self.__send__(0)
             self.server_msg_ = "The file \"%s\" does not exist in the server directory" % (
                 self.__unmarshall__(filename))
-            self.__record__(self.client_[0],str(self.port_),
-                self.__unmarshall__(self.client_req_),
-                self.__unmarshall__(filename),success=False)
             self.__send__(self.server_msg_)
         print("----------------------- END -----------------------")
         
@@ -315,9 +309,7 @@ class Server():
             file_type = self.__unmarshall__(filename)[file_type_idx:]
 
             print(self.__unmarshall__(name)[-len(file_type):])
-            
-            succ = False
-            
+
             if self.__unmarshall__(name)[-len(file_type):] != file_type:
                 self.server_msg_ = "The file must be the same type."
 
@@ -325,22 +317,15 @@ class Server():
                 os.rename(
                     self.serv_dir_+self.__unmarshall__(filename),
                     self.serv_dir_+self.__unmarshall__(name))
-                succ = True
+
                 self.server_msg_ = "%s Rename Successful %s" % (
                     WALL, WALL)
-                
-            self.__record__(self.client_[0],str(self.port_),
-                self.__unmarshall__(self.client_req_),
-                self.__unmarshall__(filename),success=succ)
             self.__send__(self.server_msg_)
 
         else:
             self.__send__(0)
             self.server_msg_ = "The file \"%s\" does not exist in the server directory" % (
                 self.__unmarshall__(filename))
-            self.__record__(self.client_[0],str(self.port_),
-                self.__unmarshall__(self.client_req_),
-                self.__unmarshall__(filename),success=False)
             self.__send__(self.server_msg_)
         print("----------------------- END -----------------------")
 
@@ -378,7 +363,6 @@ class Server():
             with open(
                     self.serv_dir_+self.__unmarshall__(filename)) as f:
                 content = f.read()
-                succ = False
                 if self.__unmarshall__(offset, int) >= len(content):
                     self.server_msg_ = "Your \"offset\" exceeded the length of file content"
                 else:
@@ -392,19 +376,13 @@ class Server():
                             self.serv_dir_+self.__unmarshall__(filename), 'w') as f:
                         f.write(self.server_msg_)
                         f.close()
-                    succ = True
-            self.__record__(self.client_[0],str(self.port_),
-                self.__unmarshall__(self.client_req_),
-                self.__unmarshall__(filename),success=succ)
+                    
             self.__send__(self.server_msg_)
 
         else:
             self.__send__(0)
             self.server_msg_ = "The file \"%s\" does not exist in the server directory" % (
                 self.__unmarshall__(filename))
-            self.__record__(self.client_[0],str(self.port_),
-                self.__unmarshall__(self.client_req_),
-                self.__unmarshall__(filename),success=False)
             self.__send__(self.server_msg_)
         print("----------------------- END -----------------------")
 
@@ -430,9 +408,6 @@ Convertig file to \".txt\"...\n"
                     self.serv_dir_,filename,self.__unmarshall__(content))
             self.server_msg_ = "%s Created Successfully %s" % (
                     WALL, WALL)
-            self.__record__(self.client_[0],str(self.port_),
-                self.__unmarshall__(self.client_req_),
-                self.__unmarshall__(filename),success=True)
             self.__send__(self.server_msg_)
 
         elif self.__file_exist__(
@@ -443,8 +418,6 @@ Convertig file to \".txt\"...\n"
 Do you want to overwrite it[Y/n]: " % (self.__unmarshall__(filename))
             self.__send__(self.server_msg_)
             answer = self.__receive__()
-            succ = False
-            
             if self.__unmarshall__(answer) == ""\
             or self.__unmarshall__(answer).lower() == 'y'\
             or self.__unmarshall__(answer).lower() == 'yes':
@@ -454,15 +427,11 @@ Do you want to overwrite it[Y/n]: " % (self.__unmarshall__(filename))
                     self.__unmarshall__(content))
                 self.server_msg_ = "%s Created Successfully %s" % (
                     WALL, WALL)
-                succ = True
                 self.__send__(self.server_msg_)
             else:
                 self.server_msg_ = "\n%s File NOT Created %s" % (
                     WALL,WALL)
                 self.__send__(self.server_msg_)
-            self.__record__(self.client_[0],str(self.port_),
-                    self.__unmarshall__(self.client_req_),
-                    self.__unmarshall__(filename),success=succ)
         else:
             self.__send__(1)
             content = self.__receive__()
@@ -471,9 +440,6 @@ Do you want to overwrite it[Y/n]: " % (self.__unmarshall__(filename))
                 self.__unmarshall__(content))
             self.server_msg_ = "%s Created Successfully %s" % (
                     WALL, WALL)
-            self.__record__(self.client_[0],str(self.port_),
-                self.__unmarshall__(self.client_req_),
-                self.__unmarshall__(filename),success=True)
             self.__send__(self.server_msg_)
         print("----------------------- END -----------------------")
            
