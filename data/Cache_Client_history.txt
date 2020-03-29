@@ -1,8 +1,4 @@
-Request: READ file "hello.txt" Succeed	Time: 2020-03-24 21:56:42
-Request: READ file "hello.txt" Succeed	Time: 2020-03-27 17:36:16
-Request: READ file "hello.txt" Succeed	Time: 2020-03-28 01:44:27
-Request: READ file "hello.txt" Succeed	Time: 2020-03-28 01:48:09
-Request: READ file "hello.txt" Succeed	Time: 2020-03-28 02:40:28
-Request: READ file "hello.txt" Succeed	Time: 2020-03-28 02:52:54
-Request: READ file "hello.txt" Failed	Time: 2020-03-28 02:58:54
-Request: READ file "hello.txt" Failed	Time: 2020-03-28 02:59:10
+Client: 127.0.1.1	Request: READ"hello.txt"	Succeed	2020-03-29 03:59:44
+Client: 127.0.1.1	Request: WRITE"hello.txt"	Succeed	2020-03-29 03:59:49
+Client: 127.0.1.1	Request: READ"hello.txt"	Succeed	2020-03-29 07:12:28
+Client: 127.0.1.1	Request: READ"hello.txt"	Succeed	2020-03-29 08:06:24
