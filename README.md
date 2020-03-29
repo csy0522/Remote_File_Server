@@ -10,11 +10,7 @@ Use any python IDE to open the project. I personally use python IDLE.You can dow
 
 ### Installation
 
-Before running the program, type the following command to install the libraries that the project depends on
-
-```
-pip install fcache
-```
+...
 
 ## Running the tests
 
@@ -38,7 +34,3 @@ Choose your own Server Directory & transfer files remotely.
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
-
-## Acknowledgements
-
-* **Thomas Roten** - [tsroten](https://pypi.org/project/fcache/)
