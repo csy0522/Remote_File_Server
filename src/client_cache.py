@@ -60,10 +60,10 @@ exceeded the length of content")
         
     def __LS__(self):
         print("\nList all files in Cache")
-        print('\n---------------- CACHE ----------------')
+        print('\n================= CACHE =================')
         for k,v in self.storage_.items():
-            print("\t%s: %s" % (k,v[1]))
-        print('---------------- END ----------------\n')
+            print("\t%s" % (k))
+        print('================= END =================\n')
         
         
     def __add__(self,key,content,offset,last_index):
@@ -119,14 +119,16 @@ exceeded the length of content")
         global CUR
         self.logfile_ = open(DATA_DIR+LOG_FILE,'a')
         self.logfile_.write("File: " + key + 
-                            '\tContent: ' + self.storage_[key][1] + 
+                            # '\tContent: ' + self.storage_[key][1] + 
                             '\t' + what + '\t' + 
                             CUR.strftime("%Y-%m-%d %H:%M:%S")+"\n")
         self.logfile_.close()
         
     def __get_time__(self):
         global CUR
-        print(CUR.strftime("%Y-%m-%d %H:%M:%S"))
+        print("\n========== CURRENT TIME ==========\n")
+        print('\t' + CUR.strftime("%Y-%m-%d %H:%M:%S"))
+        print("\n=====================================")
         
     def __update_history__(self,request,filename,success):
         succ = "Failed"

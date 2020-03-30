@@ -8,14 +8,10 @@ Created on Sun Mar 29 02:16:41 2020
 
 
 import socket
-from datetime import datetime
-from datetime import timedelta
 from client_cache import Client_Cache
 import argparse
 from mar_unmar_shall import __marshall__ as __mar__
 from mar_unmar_shall import __unmarshall__ as __unmar__
-
-BUF = 4096
 
 class Client:
     
@@ -93,11 +89,11 @@ class Client:
             self.__receive__()
             self.__receive__()
             self.__receive__()
-            now = datetime.now()
-            des = now + timedelta(seconds=int(length))
-            while now < des:
-                now = datetime.now()
+            self.__receive__()
+            while True:
                 response = self.__receive__(p=False)
+                if __unmar__(response)[0] == '-':
+                    break
                 if __unmar__(response,int) == 1:
                     self.__receive__()
                     self.__receive__()
@@ -139,25 +135,29 @@ class Client:
         self.client_req_ = "CREATE"
         self.__send__(self.client_req_)
         self.__send__(pathname)
+        self.__receive__()
         self.pass_req_ = self.__receive__(p=False)
+        
         if __unmar__(self.pass_req_,int) == 0:
             self.__receive__()
-            self.__send__(content)
-            self.__receive__()
-        elif __unmar__(self.pass_req_,int) == 2:
-            answer = input(
-                __unmar__(self.__receive__(p=False)))
-            self.__send__(answer)
-            if answer == ""\
-            or answer.lower() == 'y'\
-            or answer.lower() == 'yes':
-                self.__send__(content)
-                self.__receive__()
+            e = self.__receive__()
+            if __unmar__(e,int) == 1:
+                self.__overwrite__(content)
             else:
-                self.__receive__()
+                self.__send__(content)
+        elif __unmar__(self.pass_req_,int) == 2:
+            self.__overwrite__(content)
         elif __unmar__(self.pass_req_,int) == 1:
             self.__send__(content)
-            self.__receive__()
+            
+    def __overwrite__(self,content):
+        answer = input(
+            __unmar__(self.__receive__(p=False)))
+        self.__send__(answer)
+        if answer == ""\
+        or answer.lower() == 'y'\
+        or answer.lower() == 'yes':
+            self.__send__(content)
             
     def __ERASE__(self,pathname,offset,b2e):
         self.client_req_ = "ERASE"
@@ -181,7 +181,6 @@ class Client:
         self.pass_req_ = self.__receive__(p=False)
         if __unmar__(self.pass_req_,int) == 1:
             self.__receive__()
-            self.__receive__()
         elif __unmar__(self.pass_req_,int) == 0:
             self.__receive__()
             
@@ -200,12 +199,23 @@ class Client:
         return cache
     
     def __send__(self,msg):
-        self.socket_.sendto(__mar__(msg), self.server_)
+        if type(msg) == int:
+            msg = str(msg)
+        bufsize = self.__get_bufsize__(msg)
+        self.socket_.sendto(__mar__(bufsize),self.server_)
+        self.socket_.sendto(__mar__(msg),self.server_)
         
-    def __receive__(self, p=True):
-        msg, self.server_addr_ = self.socket_.recvfrom(BUF)
+    def __get_bufsize__(self,msg):
+        k = 1
+        while k < len(msg):
+            k = k * 2
+        return k
+        
+    def __receive__(self,p=True):
+        bufsize,self.server_addr_ = self.socket_.recvfrom(12)
+        msg, self.server_addr_ = self.socket_.recvfrom(__unmar__(bufsize,int))
         if p == True:
-            print(__unmar__(msg, 'str'))
+            print(__unmar__(msg))
         return msg
     
     def __check_cache__(self,data):
@@ -294,7 +304,7 @@ class Client:
         print(" : Monitor the change / update in file \"filename\" for \"Duration\" amount of time")
         print('\n')
         
-        print('\033[1m' + "rename(f)" + '\033[0m' + " (\033[4mfilename\033[0m, \033[4mnew-file-name\033[0m)")
+        print('\033[1m' + "rename(x)" + '\033[0m' + " (\033[4mfilename\033[0m, \033[4mnew-file-name\033[0m)")
         print(" : Rename an existing file to \"new file name\"")
         print('\n')
         
@@ -352,51 +362,70 @@ class Client:
                 b2r = self.__check_input_type__(
                     "Number of Bytes to read (int): ",int)
                 client.__READ__(filename,offset,b2r)
+                
             elif request == 'write' or request == 'w':
                 filename = input("Filename: ")
                 offset = self.__check_input_type__("Offset (int): ",int)
                 b2w = input("Contents to insert: ")
                 client.__WRITE__(filename,offset,b2w)
+                
             elif request == 'monitor' or request == 'm':
                 filename = input("Filename: ")
                 time = self.__check_input_type__(
                     "Monitoring time (second) (int): ",int)
-                client.__MONITOR__(filename,time)    
-            elif request == 'rename' or request == 'f':
+                client.__MONITOR__(filename,time)  
+                
+            elif request == 'rename' or request == 'x':
                 filename = input("Filename: ")
                 new_name = input("New Filename: ")
                 client.__RENAME__(filename,new_name)
+
             elif request == 'replace' or request == 'p':
                 filename = input("Filename: ")
                 offset = self.__check_input_type__("Offset (int): ",int)
                 text = input("Replace to: ")
                 client.__REPLACE__(filename,offset,text)
+
             elif request == 'create' or request == 'n':
                 filename = input("Filename: ")
-                content = input("Content: ")
+                content = input("Content(default: empty-file): ")
                 client.__CREATE__(filename,content)
+
             elif request == "delete" or request == 'd':
                 filename = input("Filename: ")
                 client.__DELETE__(filename)
+
             elif request == "erase" or request == 'e':
                 filename = input("Filename: ")
                 offset = self.__check_input_type__("Offset (int): ",int)
                 b2e = self.__check_input_type__(
                     "Number of Bytes to erase (int): ",int)
-                client.__ERASE__(filename,offset,b2e)    
+                client.__ERASE__(filename,offset,b2e)
+
+            elif request == "server" or request == 's':
+                client.__LS__()
+
+            elif request == "quit" or request == 'q':
+                print("\n" + 
+                      "======================= " + 
+                      '\033[1m' + "Good bye" + '\033[0m' + 
+                      " =======================" + 
+                      "\n")
+                break
             elif request == "cache" or request == 'c':
                 self.cache_.__LS__()
             elif request == "time" or request == "t":
                 self.cache_.__get_time__()
-            elif request == "server" or request == 's':
-                client.__LS__()
             elif request == 'help' or request == 'h':
                 self.__help__()
-            elif request == "quit" or request == 'q':
-                print("\n=============== Good bye ===============\n")
-                break
             else:
                 print("No such request")
+            # s = "\033[1;31;40mFAILED\033[0m"
+            # if succ == True:
+            #     s = "\033[1;32;40mSUCCEEDED\033[0m"
+            # self.server_msg_ = ("-------------------- %s --------------------" % (s))
+            # print(self.server_msg_)
+            
                 
     def __check_input_type__(self,text,input_type):
         inp = ""
