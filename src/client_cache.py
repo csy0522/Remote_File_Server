@@ -46,6 +46,8 @@ class Client_Cache:
 exceeded the length of content")
             return False
         self.__update_history__("READ",filename,success=True)
+        if b2r == -1:
+            b2r = last_index_ - offset
         print(self.storage_[filename][1][offset-offset_:offset-offset_+b2r])
         return True
     

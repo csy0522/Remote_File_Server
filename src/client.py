@@ -46,6 +46,7 @@ class Client:
             response = self.__receive__()
             success = self.__receive__(p=False)
             if __unmar__(success) == "True":
+                b2r = len(__unmar__(response)) - offset
                 self.cache_.__add__(
                     pathname,__unmar__(response),
                     offset,offset+b2r)
@@ -468,7 +469,7 @@ class Client:
                 filename = input("Filename: ")
                 offset = self.__check_input_type__("Offset (int): ",int)
                 b2r = self.__check_input_type__(
-                    "Number of Bytes to read (int): ",int)
+                    "Number of Bytes to read (\'-1\' to read till the end) (int): ",int)
                 succ = client.__READ__(filename,offset,b2r)
                 
             elif request == 'write' or request == 'w':
@@ -507,7 +508,7 @@ class Client:
                 filename = input("Filename: ")
                 offset = self.__check_input_type__("Offset (int): ",int)
                 b2e = self.__check_input_type__(
-                    "Number of Bytes to erase (int): ",int)
+                    "Number of Bytes to erase (\'-1\' to read till the end) (int): ",int)
                 succ = client.__ERASE__(filename,offset,b2e)
 
             elif request == "server" or request == 's':

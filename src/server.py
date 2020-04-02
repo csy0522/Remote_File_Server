@@ -13,6 +13,7 @@ from datetime import timedelta
 import threading
 import time
 from collections import deque
+import select
 from mar_unmar_shall import __marshall__ as __mar__
 from mar_unmar_shall import __unmarshall__ as __unmar__
 
@@ -23,6 +24,7 @@ CLIENT_FILE = "Clients.txt"
 DATA_DIR = "../data/"
 CUR = datetime.now()
 CURR = datetime.now()
+TIMEOUT = 20
 
 class Server():
     
@@ -48,31 +50,31 @@ class Server():
         while True:
             succ = ""
             print("\nWaiting to receive message...\n")
+            self.socket_.settimeout(5.0)
             self.client_req_ = self.__receive__()
+            if self.client_req_ == "timeout":
+                print("Timeout, Restarting Server ... \n")
+                continue
             self.__record_client__(self.client_[0])
             self.__append_client__(self.client_)
             print("Client \"%s\" requested to:" % (self.client_[0]))
             succ = eval("self.__" + __unmar__(self.client_req_) + "__")()
-            # self.__record__(self.client_[0],str(self.port_),
-            #     __unmar__(self.client_req_),
-            #     __unmar__(self.req_file_),success=succ)
+            self.__record__(self.client_[0],str(self.port_),
+                __unmar__(self.client_req_),
+                __unmar__(self.req_file_),success=succ)
             s = "\033[1;31;40mFAILED\033[0m"
             if succ == True:
                 s = "\033[1;32;40mSUCCEEDED\033[0m"
             self.server_msg_ = ("-------------------- %s --------------------" % (s))
             print(self.server_msg_)
             
-    def __append_client__(self,client):
-        try:
-            self.clients_.remove(client)
-            self.clients_.appendleft(client)
-        except ValueError:
-            self.clients_.appendleft(client)
             
     def __DISAPPEAR__(self):
-        print("\n\t%s\n" % (__unmar__(self.client_req_)))
+        print("\n\t%s from clients list\n" % (__unmar__(self.client_req_)))
+        self.req_file_ = __mar__("")
         self.clients_.remove(self.client_)
         return True
+    
 
     
     def __READ__(self):
@@ -109,6 +111,8 @@ class Server():
                     self.server_msg_ = "Your length of \"bytes to read\" exceeded the length of file content.\n"
                 
                 else:
+                    if __unmar__(b2r,int) == -1:
+                        b2r = __mar__(len(content)-__unmar__(offset,int))
                     self.server_msg_ = content[__unmar__(offset,int):
                                   __unmar__(offset,int) + 
                                   __unmar__(b2r,int)]
@@ -195,36 +199,10 @@ class Server():
             
     
     def __one_copy_semantics__(self,filename,offset,b2w):
-        if len(self.clients_) > 0:
-            for cli in self.clients_:
+        if len(self.clients_) > 1:
+            for cli in list(self.clients_)[1:]:
                 if cli.cache_.__data_exist__(filename,offset) == True:
                     cli.cache_.__WRITE__(filename,offset,b2w)
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     
     
@@ -545,6 +523,8 @@ class Server():
                         self.server_msg_ = "Your length of \"bytes to read\" exceeded the length of file content.\n"
                     
                     else:
+                        if __unmar__(b2e,int) == -1:
+                            b2e = __mar__(len(content))
                         self.server_msg_ = content[:__unmar__(offset,int)] + \
                             content[__unmar__(b2e,int):]
                         with open(
@@ -577,7 +557,6 @@ class Server():
             succ = True
         return succ
 
-    
         
     
     def __LS__(self):
@@ -592,6 +571,7 @@ class Server():
         self.__send__(files)
         self.req_file_ = __mar__("ALL")
         return True         
+    
     
     
     def __send__(self,msg):
@@ -610,9 +590,13 @@ class Server():
     
     
     def __receive__(self):
-        bufsize,self.client_ = self.socket_.recvfrom(12)
-        msg,self.client_ = self.socket_.recvfrom(__unmar__(bufsize,int))
-        return msg
+        timeout = select.select([self.socket_],[],[],TIMEOUT)
+        if timeout[0]:
+            bufsize,self.client_ = self.socket_.recvfrom(12)
+            msg,self.client_ = self.socket_.recvfrom(__unmar__(bufsize,int))
+            return msg
+        else:
+            return "timeout"
     
     
     def __create_socket__(self, host, port):
@@ -665,6 +649,13 @@ class Server():
                 self.client_file_ = open(DATA_DIR+CLIENT_FILE,'a')
                 self.client_file_.write(client+'\n')
                 self.client_file_.close()
+        
+    def __append_client__(self,client):
+        try:
+            self.clients_.remove(client)
+            self.clients_.appendleft(client)
+        except ValueError:
+            self.clients_.appendleft(client)
                 
                 
     def __record__(self,client,port,request,filename,success):
@@ -673,10 +664,15 @@ class Server():
         if success == False:
             succ = "Failed"
         curr_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        self.history_.write("Client: " + 
+        if request == "DISAPPEAR":
+            self.history_.write("Client: " + 
             client + "\tPort: " + port + "\tRequest: " + 
-            request + " file \"" + filename + "\" " + 
-            succ + "\tTime: " + curr_time + "\n")
+            request + '\t' + succ + "\tTime: " + curr_time + "\n")
+        else:
+            self.history_.write("Client: " + 
+                client + "\tPort: " + port + "\tRequest: " + 
+                request + " file \"" + filename + "\" " + 
+                succ + "\tTime: " + curr_time + "\n")
         self.history_.close()
         
         
