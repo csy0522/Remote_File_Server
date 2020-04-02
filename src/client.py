@@ -28,12 +28,12 @@ class Client:
         self.cache_dir_ = cache_dir
     
     def __READ__(self, pathname, offset, b2r):
+        succ = False
         self.client_req_ = "READ"
         if self.cache_.__data_exist__(pathname,offset,b2r) == True:
             self.__from_cache__(pathname,self.client_req_)
-            cache_reading = self.cache_.__READ__(pathname,offset,b2r)
-            if cache_reading == True:
-                return
+            succ = self.cache_.__READ__(pathname,offset,b2r)
+            return succ
         self.__send__(self.client_req_)
         self.__send__(pathname)
         self.pass_req_ = self.__receive__(p=False)
@@ -49,11 +49,14 @@ class Client:
                 self.cache_.__add__(
                     pathname,__unmar__(response),
                     offset,offset+b2r)
+                succ = True
         elif __unmar__(self.pass_req_,int) == 0:
             self.__receive__()
+        return succ
             
             
     def __WRITE__(self, pathname, offset, b2w):
+        succ = False
         self.client_req_ = "WRITE"
         self.__send__(self.client_req_)
         if self.cache_.__data_exist__(pathname,offset) == True:
@@ -64,6 +67,7 @@ class Client:
             self.__send__(offset)
             self.__send__(b2w)
             self.__receive__()
+            succ = True
         else:
             self.__send__(1)
             self.__send__(pathname)
@@ -75,10 +79,15 @@ class Client:
                 self.__receive__()
                 self.__receive__()
                 self.__receive__()
+                success = self.__receive__(p=False)
+                if __unmar__(success) == "True":
+                    succ = True
             elif __unmar__(self.pass_req_,int) == 0:
                 self.__receive__()
+        return succ
                 
     def __MONITOR__(self, pathname, length):
+        succ = False
         self.client_req_ = "MONITOR"
         self.__send__(self.client_req_)
         self.__send__(pathname)
@@ -100,38 +109,108 @@ class Client:
                 elif __unmar__(response,int) == 0:
                     self.__receive__()
                     break
+            succ = True
         elif __unmar__(self.pass_req_,int) == 0:
             self.__receive__()
+        return succ
             
     def __RENAME__(self,pathname,name):
+        succ = False
         self.client_req_ = "RENAME"
         self.__send__(self.client_req_)
-        self.__send__(pathname)
-        self.pass_req_ = self.__receive__(p=False)
-        if __unmar__(self.pass_req_,int) == 1:
-            self.__receive__()
+        if self.cache_.__data_exist__(pathname) == True:
+            self.__from_cache__(pathname,self.client_req_)
+            self.cache_.__RENAME__(pathname,name)
+            self.__send__(0)
+            self.__send__(pathname)
             self.__send__(name)
             self.__receive__()
-            self.__receive__()
-        elif __unmar__(self.pass_req_,int) == 0:
-            self.__receive__()
+            succ = True
+        else:
+            self.__send__(1)
+            self.__send__(pathname)
+            self.pass_req_ = self.__receive__(p=False)
+            if __unmar__(self.pass_req_,int) == 1:
+                self.__receive__()
+                self.__send__(name)
+                self.__receive__()
+                self.__receive__()
+                success = self.__receive__(p=False)
+                if __unmar__(success) == "True":
+                    succ = True
+            elif __unmar__(self.pass_req_,int) == 0:
+                self.__receive__()
+        
+        return succ
             
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     def __REPLACE__(self,pathname,offset,b2w):
+        succ = False
         self.client_req_ = "REPLACE"
         self.__send__(self.client_req_)
-        self.__send__(pathname)
-        self.pass_req_ = self.__receive__(p=False)
-        if __unmar__(self.pass_req_,int) == 1:
-            self.__receive__()
+        if self.cache_.__data_exist__(pathname,offset) == True:
+            self.__from_cache__(pathname,self.client_req_)
+            self.cache_.__REPLACE__(pathname,offset,b2w)
+            self.__send__(0)
+            self.__send__(pathname)
             self.__send__(offset)
             self.__send__(b2w)
             self.__receive__()
-            self.__receive__()
-            self.__receive__()
-        elif __unmar__(self.pass_req_,int) == 0:
-            self.__receive__()
+            succ = True
+        else:
+            self.__send__(1)
+            self.__send__(pathname)
+            self.pass_req_ = self.__receive__(p=False)
+            if __unmar__(self.pass_req_,int) == 1:
+                self.__receive__()
+                self.__send__(offset)
+                self.__send__(b2w)
+                self.__receive__()
+                self.__receive__()
+                self.__receive__()
+                success = self.__receive__(p=False)
+                if __unmar__(success) == "True":
+                    succ = True
+            elif __unmar__(self.pass_req_,int) == 0:
+                self.__receive__()
+        return succ
             
     def __CREATE__(self,pathname,content):
+        succ = False
         self.client_req_ = "CREATE"
         self.__send__(self.client_req_)
         self.__send__(pathname)
@@ -140,17 +219,21 @@ class Client:
         
         if __unmar__(self.pass_req_,int) == 0:
             self.__receive__()
-            e = self.__receive__()
+            e = self.__receive__(p=False)
             if __unmar__(e,int) == 1:
-                self.__overwrite__(content)
+                succ = self.__overwrite__(content)
             else:
                 self.__send__(content)
+                succ = True
         elif __unmar__(self.pass_req_,int) == 2:
-            self.__overwrite__(content)
+            succ = self.__overwrite__(content)
         elif __unmar__(self.pass_req_,int) == 1:
             self.__send__(content)
+            succ = True
+        return succ
             
     def __overwrite__(self,content):
+        succ = False
         answer = input(
             __unmar__(self.__receive__(p=False)))
         self.__send__(answer)
@@ -158,37 +241,59 @@ class Client:
         or answer.lower() == 'y'\
         or answer.lower() == 'yes':
             self.__send__(content)
+            succ = True
+        return succ
             
     def __ERASE__(self,pathname,offset,b2e):
+        succ = False
         self.client_req_ = "ERASE"
         self.__send__(self.client_req_)
-        self.__send__(pathname)
-        self.pass_req_ = self.__receive__(p=False)
-        if __unmar__(self.pass_req_,int) == 1:
-            self.__receive__()
+        if self.cache_.__data_exist__(pathname,offset) == True:
+            self.__from_cache__(pathname,self.client_req_)
+            self.cache_.__REPLACE__(pathname,offset,b2e)
+            self.__send__(0)
+            self.__send__(pathname)
             self.__send__(offset)
             self.__send__(b2e)
             self.__receive__()
-            self.__receive__()
-            self.__receive__()
-        elif __unmar__(self.pass_req_,int) == 0:
-            self.__receive__()
+            succ = True
+        else:
+            self.__send__(1)
+            self.__send__(pathname)
+            self.pass_req_ = self.__receive__(p=False)
+            if __unmar__(self.pass_req_,int) == 1:
+                self.__receive__()
+                self.__send__(offset)
+                self.__send__(b2e)
+                self.__receive__()
+                self.__receive__()
+                self.__receive__()
+                success = self.__receive__(p=False)
+                if __unmar__(success) == "True":
+                    succ = True
+            elif __unmar__(self.pass_req_,int) == 0:
+                self.__receive__()
+        return succ
             
     def __DELETE__(self,pathname):
+        succ = False
         self.client_req_ = "DELETE"
         self.__send__(self.client_req_)
         self.__send__(pathname)
         self.pass_req_ = self.__receive__(p=False)
         if __unmar__(self.pass_req_,int) == 1:
             self.__receive__()
+            succ = True
         elif __unmar__(self.pass_req_,int) == 0:
             self.__receive__()
+        return succ
             
     def __LS__(self):
         self.client_req_ = "LS"
         self.__send__(self.client_req_)
         self.__receive__()
         self.__receive__()
+        return True
     
     def __create_socket__(self):
         sock = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
@@ -345,6 +450,8 @@ class Client:
         print(" : Terminate the client program")
         print('\n')
         
+        return True
+        
     def __start__(self):
         print('\n' + '\033[1m' + "================== Welcome to the Client Side ==================" + '\033[0m')
         print("\nThe client will be able to send request to: ")
@@ -353,7 +460,8 @@ class Client:
         self.__help__()
         request = ""
         while True:
-            request = input("\nRequest: ")
+            succ = False
+            request = input("\nEnter your request: ")
             if request == None:
                 print("Need Request")
             elif request == 'read' or request == 'r':
@@ -361,72 +469,79 @@ class Client:
                 offset = self.__check_input_type__("Offset (int): ",int)
                 b2r = self.__check_input_type__(
                     "Number of Bytes to read (int): ",int)
-                client.__READ__(filename,offset,b2r)
+                succ = client.__READ__(filename,offset,b2r)
                 
             elif request == 'write' or request == 'w':
                 filename = input("Filename: ")
                 offset = self.__check_input_type__("Offset (int): ",int)
                 b2w = input("Contents to insert: ")
-                client.__WRITE__(filename,offset,b2w)
+                succ = client.__WRITE__(filename,offset,b2w)
                 
             elif request == 'monitor' or request == 'm':
                 filename = input("Filename: ")
                 time = self.__check_input_type__(
                     "Monitoring time (second) (int): ",int)
-                client.__MONITOR__(filename,time)  
+                succ = client.__MONITOR__(filename,time)  
                 
             elif request == 'rename' or request == 'x':
                 filename = input("Filename: ")
                 new_name = input("New Filename: ")
-                client.__RENAME__(filename,new_name)
+                succ = client.__RENAME__(filename,new_name)
 
             elif request == 'replace' or request == 'p':
                 filename = input("Filename: ")
                 offset = self.__check_input_type__("Offset (int): ",int)
                 text = input("Replace to: ")
-                client.__REPLACE__(filename,offset,text)
+                succ = client.__REPLACE__(filename,offset,text)
 
             elif request == 'create' or request == 'n':
                 filename = input("Filename: ")
                 content = input("Content(default: empty-file): ")
-                client.__CREATE__(filename,content)
+                succ = client.__CREATE__(filename,content)
 
             elif request == "delete" or request == 'd':
                 filename = input("Filename: ")
-                client.__DELETE__(filename)
+                succ = client.__DELETE__(filename)
 
             elif request == "erase" or request == 'e':
                 filename = input("Filename: ")
                 offset = self.__check_input_type__("Offset (int): ",int)
                 b2e = self.__check_input_type__(
                     "Number of Bytes to erase (int): ",int)
-                client.__ERASE__(filename,offset,b2e)
+                succ = client.__ERASE__(filename,offset,b2e)
 
             elif request == "server" or request == 's':
-                client.__LS__()
-
+                succ = client.__LS__()
             elif request == "quit" or request == 'q':
-                print("\n" + 
-                      "======================= " + 
-                      '\033[1m' + "Good bye" + '\033[0m' + 
-                      " =======================" + 
-                      "\n")
+                succ = self.__DISAPPEAR__()                
                 break
             elif request == "cache" or request == 'c':
-                self.cache_.__LS__()
+                succ = self.cache_.__LS__()
             elif request == "time" or request == "t":
-                self.cache_.__get_time__()
+                succ = self.cache_.__get_time__()
             elif request == 'help' or request == 'h':
-                self.__help__()
+                succ = self.__help__()
             else:
-                print("No such request")
-            # s = "\033[1;31;40mFAILED\033[0m"
-            # if succ == True:
-            #     s = "\033[1;32;40mSUCCEEDED\033[0m"
-            # self.server_msg_ = ("-------------------- %s --------------------" % (s))
-            # print(self.server_msg_)
+                print("\nNo Such Operation.\nPlease Enter Again.")
+            s = "\033[1;31;40mFAILED\033[0m"
+            if succ == True:
+                s = "\033[1;32;40mSUCCEEDED\033[0m"
+            status = ("-------------------- %s --------------------" % (s))
+            print(status)
+            
             
                 
+    def __DISAPPEAR__(self):
+        self.client_req_ = "DISAPPEAR"
+        self.__send__(self.client_req_)
+        
+        print("\n" + 
+                "======================= " + 
+                '\033[1m' + "Good bye" + '\033[0m' + 
+                " =======================" + 
+                "\n")
+        return True
+            
     def __check_input_type__(self,text,input_type):
         inp = ""
         while True:

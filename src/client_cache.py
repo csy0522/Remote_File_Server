@@ -55,8 +55,37 @@ exceeded the length of content")
             b2w+self.storage_[filename][1][offset-offset_:]
         self.storage_[filename] = [offset_,new_content,last_index_+len(b2w),_]
         self.__update_history__("WRITE",filename,success=True)
-        self.__update_log__(filename,"Modified")
-        print(new_content)
+        self.__update_log__(filename,"Modified from Write Operation")
+        print(new_content+'\n')
+        
+    def __RENAME__(self,filename,name):
+        offset_,content,last_index_,_ = self.storage_[filename]
+        self.__add__(name,content,offset_,last_index_)
+        self.__del__(filename)
+        self.__update_history__("RENAME",filename,success=True)
+        self.__update_log__(filename,"Modified from Rename Operation")
+        
+    def __REPLACE__(self,filename,offset,b2w):
+        offset_,content,last_index_,_ = self.storage_[filename]
+        new_content = self.storage_[filename][1][:offset-offset_]+\
+            b2w+self.storage_[filename][1][offset-offset_+len(b2w):]
+        if offset-offset_+len(b2w) > last_index_:
+            last_index_ = offset-offset_+len(b2w)
+        self.storage_[filename] = [offset_,new_content,last_index_,_]
+        self.__update_history__("REPLACE",filename,success=True)
+        self.__update_log__(filename,"Modified from Replace Operation")
+        print(new_content+'\n')
+        
+    def __ERASE__(self,filename,offset,b2e):
+        offset_,content,last_index_,_ = self.storage_[filename]
+        new_content = self.storage_[filename][1][:offset-offset_]+\
+            self.storage_[filename][1][offset-offset_+b2e:]
+        last_index_ = last_index_ - b2e
+        self.storage_[filename] = [offset_,new_content,last_index_,_]
+        self.__update_history__("ERASE",filename,success=True)
+        self.__update_log__(filename,"Modified from Erase Operation")
+        print(new_content+'\n')
+        
         
     def __LS__(self):
         print("\nList all files in Cache")
@@ -64,6 +93,7 @@ exceeded the length of content")
         for k,v in self.storage_.items():
             print("\t%s" % (k))
         print('================= END =================\n')
+        return True
         
         
     def __add__(self,key,content,offset,last_index):
@@ -74,8 +104,10 @@ exceeded the length of content")
         self.__update_log__(key,"Deleted")
         del self.storage_[key]
         
-    def __data_exist__(self,data,offset,b2r=None):
+    def __data_exist__(self,data,offset=None,b2r=None):
         if data in self.storage_:
+            if offset == None:
+                return True
             offset_,content_,last_index_, _ = self.storage_[data]
             if offset >= offset_ and offset <= last_index_:
                 if b2r != None:
@@ -129,6 +161,7 @@ exceeded the length of content")
         print("\n========== CURRENT TIME ==========\n")
         print('\t' + CUR.strftime("%Y-%m-%d %H:%M:%S"))
         print("\n=====================================")
+        return True
         
     def __update_history__(self,request,filename,success):
         succ = "Failed"

@@ -15,3 +15,13 @@ Client: 127.0.1.1	Request: READ"hel.txt"	Succeed	2020-03-31 07:27:56
 Client: 127.0.1.1	Request: WRITE"hel.txt"	Succeed	2020-03-31 07:28:05
 Client: 127.0.1.1	Request: READ"hel.txt"	Succeed	2020-03-31 07:30:57
 Client: 127.0.1.1	Request: READ"hello.txt"	Succeed	2020-03-31 07:38:07
+Client: 127.0.1.1	Request: RENAME"power.txt"	Succeed	2020-04-01 16:51:32
+Client: 127.0.1.1	Request: WRITE"tt.txt"	Succeed	2020-04-01 17:13:00
+Client: 127.0.1.1	Request: WRITE"tt.txt"	Succeed	2020-04-01 17:17:54
+Client: 127.0.1.1	Request: READ"tt.txt"	Succeed	2020-04-01 17:32:44
+Client: 127.0.1.1	Request: REPLACE"tt.txt"	Succeed	2020-04-01 17:32:53
+Client: 127.0.1.1	Request: REPLACE"tt.txt"	Succeed	2020-04-01 17:35:16
+Client: 127.0.1.1	Request: READ"tt.txt"	Succeed	2020-04-01 17:35:34
+Client: 127.0.1.1	Request: READ"tt.txt"	Succeed	2020-04-01 17:36:39
+Client: 127.0.1.1	Request: WRITE"tt.txt"	Succeed	2020-04-01 17:37:09
+Client: 127.0.1.1	Request: READ"test.txt"	Succeed	2020-04-01 18:07:15

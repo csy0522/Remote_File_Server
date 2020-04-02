@@ -12,6 +12,7 @@ from datetime import datetime
 from datetime import timedelta
 import threading
 import time
+from collections import deque
 from mar_unmar_shall import __marshall__ as __mar__
 from mar_unmar_shall import __unmarshall__ as __unmar__
 
@@ -31,11 +32,12 @@ class Server():
         self.serv_dir_ = serv_dir
         self.socket_ = self.__create_socket__(self.host_, self.port_)
         self.client_ = ""
+        self.clients_ = deque()
         self.client_req_ = ""
         self.server_msg_ = ""
         self.req_file_ = ""
         self.history_ = self.__create_file__(DATA_DIR,HIST_FILE)
-        self.clients_ = self.__create_file__(DATA_DIR,CLIENT_FILE)
+        self.client_file_ = self.__create_file__(DATA_DIR,CLIENT_FILE)
         self.time_thread_ = threading.Thread(target=self.__update_time__,daemon=True)
         self.time_thread_.start()
 
@@ -47,18 +49,31 @@ class Server():
             succ = ""
             print("\nWaiting to receive message...\n")
             self.client_req_ = self.__receive__()
-            self.__add_client__(self.client_[0])
+            self.__record_client__(self.client_[0])
+            self.__append_client__(self.client_)
             print("Client \"%s\" requested to:" % (self.client_[0]))
             succ = eval("self.__" + __unmar__(self.client_req_) + "__")()
-            self.__record__(self.client_[0],str(self.port_),
-                __unmar__(self.client_req_),
-                __unmar__(self.req_file_),success=succ)
+            # self.__record__(self.client_[0],str(self.port_),
+            #     __unmar__(self.client_req_),
+            #     __unmar__(self.req_file_),success=succ)
             s = "\033[1;31;40mFAILED\033[0m"
             if succ == True:
                 s = "\033[1;32;40mSUCCEEDED\033[0m"
             self.server_msg_ = ("-------------------- %s --------------------" % (s))
             print(self.server_msg_)
             
+    def __append_client__(self,client):
+        try:
+            self.clients_.remove(client)
+            self.clients_.appendleft(client)
+        except ValueError:
+            self.clients_.appendleft(client)
+            
+    def __DISAPPEAR__(self):
+        print("\n\t%s\n" % (__unmar__(self.client_req_)))
+        self.clients_.remove(self.client_)
+        return True
+
     
     def __READ__(self):
         succ = False
@@ -87,7 +102,7 @@ class Server():
             with open(
                     self.serv_dir_+__unmar__(self.req_file_)) as f:
                 content = f.read()
-                if int(__unmar__(offset,int)) >= len(content):
+                if int(__unmar__(offset,int)) > len(content):
                     self.server_msg_ = "Your \"offset\" exceeded the length of file content.\n"
                
                 elif __unmar__(offset,int) + __unmar__(b2r,int) > len(content):
@@ -128,6 +143,7 @@ class Server():
             self.server_msg_ = "File \"%s\" in server_directory updated through client cache.\n" % (
                 __unmar__(self.req_file_))
             self.__send__(self.server_msg_)
+            succ = True
         else:
             self.req_file_ = self.__receive__()
             print("\n\t%s file: %s\n" % (__unmar__(self.client_req_),
@@ -155,7 +171,7 @@ class Server():
                 with open(
                         self.serv_dir_+__unmar__(self.req_file_)) as f:
                     content = f.read()
-                    if __unmar__(offset,int) >= len(content):
+                    if __unmar__(offset,int) > len(content):
                         self.server_msg_ = "Your \"offset\" exceeded the length of file content\n"
                     else:
                         self.server_msg_ = "%s%s%s" % (
@@ -166,11 +182,51 @@ class Server():
                                 self.serv_dir_+__unmar__(self.req_file_), 'w') as ff:
                             ff.write(self.server_msg_)
                             ff.close()
-                            succ = True
+                        succ = True
                     f.close()
                 self.__send__(self.server_msg_)
+                self.__send__(str(succ))
+        if succ == True:
+            self.__one_copy_semantics__(
+                __unmar__(self.req_file_),
+                __unmar__(offset,int),
+                __unmar__(b2w))
         return succ
             
+    
+    def __one_copy_semantics__(self,filename,offset,b2w):
+        if len(self.clients_) > 0:
+            for cli in self.clients_:
+                if cli.cache_.__data_exist__(filename,offset) == True:
+                    cli.cache_.__WRITE__(filename,offset,b2w)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     def __MONITOR__(self):
         succ = False
@@ -242,88 +298,128 @@ class Server():
         
     def __RENAME__(self):
         succ = False
-        self.req_file_ = self.__receive__()
-        print("\n\t%s file: %s\n" % (__unmar__(self.client_req_),
+        cache = self.__receive__()
+        if __unmar__(cache,int) == 0:
+            self.req_file_ = self.__receive__()
+            print("\n\t%s file: %s\n" % (__unmar__(self.client_req_),
                                      __unmar__(self.req_file_)))
-        if self.__check_server_directory__(self.req_file_):
-    
-            self.server_msg_ = "\nYou requested to:\n\n%s %s %s\n\tfile: %s" % (
-                WALL,
-                __unmar__(self.client_req_),
-                WALL,
+            name = self.__receive__()
+            os.rename(
+                self.serv_dir_+__unmar__(self.req_file_),
+                self.serv_dir_+__unmar__(name))
+            self.server_msg_ = "File \"%s\" in server_directory updated through client cache.\n" % (
                 __unmar__(self.req_file_))
             self.__send__(self.server_msg_)
-            
-            name = self.__receive__()
-            
-            self.server_msg_ = "\tChange the file name to: %s\n%s\n" % (
-                __unmar__(name),
-                END_OF_REQUEST)
-            self.__send__(self.server_msg_)
-    
-            file_type_idx = __unmar__(self.req_file_).rfind('.')
-            file_type = __unmar__(self.req_file_)[file_type_idx:]
-    
-            print(__unmar__(name)[-len(file_type):])
-            
-            if __unmar__(name)[-len(file_type):] != file_type:
-                self.server_msg_ = "The file must be the same type.\n"
-            else:
-                os.rename(
-                    self.serv_dir_+__unmar__(self.req_file_),
-                    self.serv_dir_+__unmar__(name))
-                succ = True
-                self.server_msg_ = "\"%s\" -> \"%s\"\n" % (
-                    __unmar__(self.req_file_),__unmar__(name))
-            self.__send__(self.server_msg_)
+            succ = True
+        else:
+            self.req_file_ = self.__receive__()
+            print("\n\t%s file: %s\n" % (__unmar__(self.client_req_),
+                                         __unmar__(self.req_file_)))
+            if self.__check_server_directory__(self.req_file_):
+        
+                self.server_msg_ = "\nYou requested to:\n\n%s %s %s\n\tfile: %s" % (
+                    WALL,
+                    __unmar__(self.client_req_),
+                    WALL,
+                    __unmar__(self.req_file_))
+                self.__send__(self.server_msg_)
+                
+                name = self.__receive__()
+                
+                self.server_msg_ = "\tChange the file name to: %s\n%s\n" % (
+                    __unmar__(name),
+                    END_OF_REQUEST)
+                self.__send__(self.server_msg_)
+        
+                file_type_idx = __unmar__(self.req_file_).rfind('.')
+                file_type = __unmar__(self.req_file_)[file_type_idx:]
+        
+                print(__unmar__(name)[-len(file_type):])
+                
+                if __unmar__(name)[-len(file_type):] != file_type:
+                    self.server_msg_ = "The file must be the same type.\n"
+                else:
+                    os.rename(
+                        self.serv_dir_+__unmar__(self.req_file_),
+                        self.serv_dir_+__unmar__(name))
+                    succ = True
+                    self.server_msg_ = "\"%s\" -> \"%s\"\n" % (
+                        __unmar__(self.req_file_),__unmar__(name))
+                self.__send__(self.server_msg_)
+                self.__send__(str(succ))
         return succ
         
     
     def __REPLACE__(self):
         succ = False
-        self.req_file_ = self.__receive__()
-        print("\n\t%s file: %s\n" % (__unmar__(self.client_req_),
+        cache = self.__receive__()
+        if __unmar__(cache,int) == 0:
+            self.req_file_ = self.__receive__()
+            print("\n\t%s file: %s\n" % (__unmar__(self.client_req_),
                                      __unmar__(self.req_file_)))
-        if self.__check_server_directory__(self.req_file_):
-    
-            self.server_msg_ = "\nYou requested to:\n\n%s %s %s\n\tfile: %s" % (
-                WALL,
-                __unmar__(self.client_req_),
-                WALL,
-                __unmar__(self.req_file_))
-            self.__send__(self.server_msg_)
-            
             offset = self.__receive__()
             b2w = self.__receive__()
-            
-            self.server_msg_ = "\tOffset: {}".format(__unmar__(offset, int))
-            self.__send__(self.server_msg_)
-            
-            self.server_msg_ = "\tSequence of bytes to write: %s\n%s\n" % (
-                __unmar__(b2w),
-                END_OF_REQUEST)
-            self.__send__(self.server_msg_)
-    
             with open(
-                    self.serv_dir_+__unmar__(self.req_file_)) as f:
+                self.serv_dir_+__unmar__(self.req_file_)) as f:
                 content = f.read()
-                succ = False
-                if __unmar__(offset, int) >= len(content):
-                    self.server_msg_ = "Your \"offset\" exceeded the length of file content"
-                else:
-                    last_idx = __unmar__(offset,int)+len(
-                        __unmar__(b2w))
-                    self.server_msg_ = "%s%s%s" % (
-                        content[:__unmar__(offset, int)],
-                        __unmar__(b2w),
-                        content[last_idx:])
-                    with open(
-                            self.serv_dir_+__unmar__(self.req_file_), 'w') as ff:
-                        ff.write(self.server_msg_)
-                        ff.close()
-                    succ = True
                 f.close()
+            self.server_msg_ = "%s%s%s" % (
+                content[:__unmar__(offset, int)],
+                __unmar__(b2w),
+                content[__unmar__(offset, int)+len(__unmar__(b2w)):])
+            with open(
+                self.serv_dir_+__unmar__(self.req_file_), 'w') as ff:
+                ff.write(self.server_msg_)
+                ff.close()
+            self.server_msg_ = "File \"%s\" in server_directory updated through client cache.\n" % (
+                __unmar__(self.req_file_))
             self.__send__(self.server_msg_)
+            succ = True
+        else:
+            self.req_file_ = self.__receive__()
+            print("\n\t%s file: %s\n" % (__unmar__(self.client_req_),
+                                         __unmar__(self.req_file_)))
+            if self.__check_server_directory__(self.req_file_):
+        
+                self.server_msg_ = "\nYou requested to:\n\n%s %s %s\n\tfile: %s" % (
+                    WALL,
+                    __unmar__(self.client_req_),
+                    WALL,
+                    __unmar__(self.req_file_))
+                self.__send__(self.server_msg_)
+                
+                offset = self.__receive__()
+                b2w = self.__receive__()
+                
+                self.server_msg_ = "\tOffset: {}".format(__unmar__(offset, int))
+                self.__send__(self.server_msg_)
+                
+                self.server_msg_ = "\tSequence of bytes to write: %s\n%s\n" % (
+                    __unmar__(b2w),
+                    END_OF_REQUEST)
+                self.__send__(self.server_msg_)
+        
+                with open(
+                        self.serv_dir_+__unmar__(self.req_file_)) as f:
+                    content = f.read()
+                    succ = False
+                    if __unmar__(offset, int) >= len(content):
+                        self.server_msg_ = "Your \"offset\" exceeded the length of file content"
+                    else:
+                        last_idx = __unmar__(offset,int)+len(
+                            __unmar__(b2w))
+                        self.server_msg_ = "%s%s%s" % (
+                            content[:__unmar__(offset, int)],
+                            __unmar__(b2w),
+                            content[last_idx:])
+                        with open(
+                                self.serv_dir_+__unmar__(self.req_file_), 'w') as ff:
+                            ff.write(self.server_msg_)
+                            ff.close()
+                        succ = True
+                    f.close()
+                self.__send__(self.server_msg_)
+                self.__send__(str(succ))
         return succ
         
     
@@ -394,47 +490,71 @@ class Server():
         
     def __ERASE__(self):
         succ = False
-        self.req_file_ = self.__receive__()
-        print("\n\t%s file: %s\n" % (__unmar__(self.client_req_),
+        cache = self.__receive__()
+        if __unmar__(cache,int) == 0:
+            self.req_file_ = self.__receive__()
+            print("\n\t%s file: %s\n" % (__unmar__(self.client_req_),
                                      __unmar__(self.req_file_)))
-        if self.__check_server_directory__(self.req_file_):
-            self.server_msg_ = "\nYou requested to:\n\n%s %s %s\n\tfile: %s" % (
-                WALL,
-                __unmar__(self.client_req_),
-                WALL,
-                __unmar__(self.req_file_))
-            self.__send__(self.server_msg_)
-            
             offset = self.__receive__()
             b2e = self.__receive__()
-            
-            self.server_msg_ = "\tOffset: {}".format(__unmar__(offset, int))
-            self.__send__(self.server_msg_)
-            
-            self.server_msg_ = "\tSequence of bytes to erase: %s\n%s\n" % (
-                __unmar__(b2e),
-                END_OF_REQUEST)
-            self.__send__(self.server_msg_)
-                
             with open(
                     self.serv_dir_+__unmar__(self.req_file_)) as f:
                 content = f.read()
-                if int(__unmar__(offset,int)) >= len(content):
-                    self.server_msg_ = "Your \"offset\" exceeded the length of file content.\n"
-               
-                elif __unmar__(offset,int) + __unmar__(b2e,int) > len(content):
-                    self.server_msg_ = "Your length of \"bytes to read\" exceeded the length of file content.\n"
-                
-                else:
-                    self.server_msg_ = content[:__unmar__(offset,int)] + \
-                        content[__unmar__(b2e,int):]
-                    with open(
-                            self.serv_dir_+__unmar__(self.req_file_), 'w') as ff:
-                        ff.write(self.server_msg_)
-                        ff.close()
-                    succ = True
+                self.server_msg_ = content[:__unmar__(offset,int)] + \
+                    content[__unmar__(b2e,int):]
+                with open(
+                        self.serv_dir_+__unmar__(self.req_file_), 'w') as ff:
+                    ff.write(self.server_msg_)
+                    ff.close()
+                succ = True
                 f.close()
+            self.server_msg_ = "File \"%s\" in server_directory updated through client cache.\n" % (
+                __unmar__(self.req_file_))
             self.__send__(self.server_msg_)
+            succ = True
+        else:
+            self.req_file_ = self.__receive__()
+            print("\n\t%s file: %s\n" % (__unmar__(self.client_req_),
+                                         __unmar__(self.req_file_)))
+            if self.__check_server_directory__(self.req_file_):
+                self.server_msg_ = "\nYou requested to:\n\n%s %s %s\n\tfile: %s" % (
+                    WALL,
+                    __unmar__(self.client_req_),
+                    WALL,
+                    __unmar__(self.req_file_))
+                self.__send__(self.server_msg_)
+                
+                offset = self.__receive__()
+                b2e = self.__receive__()
+                
+                self.server_msg_ = "\tOffset: {}".format(__unmar__(offset, int))
+                self.__send__(self.server_msg_)
+                
+                self.server_msg_ = "\tSequence of bytes to erase: %s\n%s\n" % (
+                    __unmar__(b2e),
+                    END_OF_REQUEST)
+                self.__send__(self.server_msg_)
+                    
+                with open(
+                        self.serv_dir_+__unmar__(self.req_file_)) as f:
+                    content = f.read()
+                    if int(__unmar__(offset,int)) >= len(content):
+                        self.server_msg_ = "Your \"offset\" exceeded the length of file content.\n"
+                   
+                    elif __unmar__(offset,int) + __unmar__(b2e,int) > len(content):
+                        self.server_msg_ = "Your length of \"bytes to read\" exceeded the length of file content.\n"
+                    
+                    else:
+                        self.server_msg_ = content[:__unmar__(offset,int)] + \
+                            content[__unmar__(b2e,int):]
+                        with open(
+                                self.serv_dir_+__unmar__(self.req_file_), 'w') as ff:
+                            ff.write(self.server_msg_)
+                            ff.close()
+                        succ = True
+                    f.close()
+                self.__send__(self.server_msg_)
+                self.__send__(str(succ))
         return succ
         
     
@@ -456,6 +576,8 @@ class Server():
                 self.serv_dir_+__unmar__(self.req_file_))
             succ = True
         return succ
+
+    
         
     
     def __LS__(self):
@@ -534,15 +656,15 @@ class Server():
         return os.path.isfile(directory+filename)
             
     
-    def __add_client__(self,client):
+    def __record_client__(self,client):
         if self.__file_exist__(DATA_DIR,CLIENT_FILE):
             f = open(DATA_DIR+CLIENT_FILE,'r')
             if client+'\n' in f:
                 f.close()
             else:
-                self.clients_ = open(DATA_DIR+CLIENT_FILE,'a')
-                self.clients_.write(client+'\n')
-                self.clients_.close()
+                self.client_file_ = open(DATA_DIR+CLIENT_FILE,'a')
+                self.client_file_.write(client+'\n')
+                self.client_file_.close()
                 
                 
     def __record__(self,client,port,request,filename,success):
