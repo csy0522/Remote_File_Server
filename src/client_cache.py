@@ -29,27 +29,12 @@ class Client_Cache:
         self.time_thread_ = threading.Thread(target=self.__update_time__,daemon=True)
         self.time_thread_.start()
         
-        
     def __READ__(self,filename,offset,b2r):
-        if not self.__data_exist__(filename,offset,b2r):
-            self.__update_history__("READ",filename,success=False)
-            print("The filename does not exist in Cache")
-            return False
         offset_,content_,last_index_,_ = self.storage_[filename]
-        if offset < offset_ or offset > last_index_:
-            self.__update_history__("READ",filename,success=False)
-            print("The \"offset\" is either below or over the original offset.")
-            return False
-        elif offset+b2r > last_index_:
-            self.__update_history__("READ",filename,success=False)
-            print("The length of bytes to read from the offset\
-exceeded the length of content")
-            return False
-        self.__update_history__("READ",filename,success=True)
         if b2r == -1:
             b2r = last_index_ - offset
         print(self.storage_[filename][1][offset-offset_:offset-offset_+b2r])
-        return True
+        self.__update_history__("READ",filename,success=True)
     
     def __WRITE__(self,filename,offset,b2w):
         offset_,content,last_index_,_ = self.storage_[filename]
@@ -59,14 +44,14 @@ exceeded the length of content")
         self.__update_history__("WRITE",filename,success=True)
         self.__update_log__(filename,"Modified from Write Operation")
         print(new_content+'\n')
-        
+
     def __RENAME__(self,filename,name):
         offset_,content,last_index_,_ = self.storage_[filename]
-        self.__add__(name,content,offset_,last_index_)
         self.__del__(filename)
+        self.__add__(name,content,offset_,last_index_)
         self.__update_history__("RENAME",filename,success=True)
         self.__update_log__(filename,"Modified from Rename Operation")
-        
+
     def __REPLACE__(self,filename,offset,b2w):
         offset_,content,last_index_,_ = self.storage_[filename]
         new_content = self.storage_[filename][1][:offset-offset_]+\
@@ -77,7 +62,7 @@ exceeded the length of content")
         self.__update_history__("REPLACE",filename,success=True)
         self.__update_log__(filename,"Modified from Replace Operation")
         print(new_content+'\n')
-        
+
     def __ERASE__(self,filename,offset,b2e):
         offset_,content,last_index_,_ = self.storage_[filename]
         new_content = self.storage_[filename][1][:offset-offset_]+\
@@ -87,21 +72,18 @@ exceeded the length of content")
         self.__update_history__("ERASE",filename,success=True)
         self.__update_log__(filename,"Modified from Erase Operation")
         print(new_content+'\n')
-        
-        
+
     def __LS__(self):
         print("\nList all files in Cache")
         print('\n================= CACHE =================')
         for k,v in self.storage_.items():
             print("\t%s" % (k))
         print('================= END =================\n')
-        return True
-        
-        
+
     def __add__(self,key,content,offset,last_index):
         self.storage_[key] = [offset,content,last_index,CUR+timedelta(seconds=CACHE_TIME)]
         self.__update_log__(key,"Created")
-        
+
     def __del__(self,key):
         self.__update_log__(key,"Deleted")
         del self.storage_[key]
@@ -163,8 +145,7 @@ exceeded the length of content")
         print("\n========== CURRENT TIME ==========\n")
         print('\t' + CUR.strftime("%Y-%m-%d %H:%M:%S"))
         print("\n=====================================")
-        return True
-        
+
     def __update_history__(self,request,filename,success):
         succ = "Failed"
         if success == True:
@@ -181,15 +162,7 @@ exceeded the length of content")
         
         
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
+
         
         
         
