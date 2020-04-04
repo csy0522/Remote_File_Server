@@ -7,7 +7,11 @@ Created on Mon Mar 30 04:01:56 2020
 """
 
 HEX_DIC = {10:'A',11:'B',12:'C',13:'D',14:'E',15:'F'}
-
+'''
+This function encodes the messages
+which allows the server and the clients
+to communicate.
+'''
 def __marshall__(s):
     if type(s) == int:
         s = str(s)
@@ -21,6 +25,10 @@ def __marshall__(s):
         hex_list.append(h)
     return b''.join(hex_list)
 
+'''
+This function decodes the messages
+shared by the server and the clients.
+'''
 def __unmarshall__(b,d_t=str):
     hex_list = b.hex()
     char_list = []
@@ -36,12 +44,17 @@ def __unmarshall__(b,d_t=str):
         return bool(''.join(char_list))
     return ''.join(char_list)
 
+'''
+This function converts integer to hexadecimal.
+'''
 def __int_to_hex__(a):
     r = a % 16
     if r in list(HEX_DIC.keys()):
         r = HEX_DIC[r]
     return r
-
+'''
+This function converts hexadecimal to integer.
+'''
 def __hex_to_int__(h):
     try:
         h = int(h)

@@ -79,3 +79,5 @@ Client: 127.0.1.1	Request: ERASE"CZ4013.txt"	Succeed	2020-04-05 04:41:20
 Client: 127.0.1.1	Request: READ"CZ4013.txt"	Succeed	2020-04-05 04:41:40
 Client: 127.0.1.1	Request: ERASE"text.txt"	Succeed	2020-04-05 04:43:29
 Client: 127.0.1.1	Request: READ"text.txt"	Succeed	2020-04-05 04:43:44
+Client: 127.0.1.1	Request: WRITE"text.txt"	Succeed	2020-04-05 05:52:22
+Client: 127.0.1.1	Request: READ"text.txt"	Succeed	2020-04-05 05:52:32

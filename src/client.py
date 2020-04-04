@@ -19,6 +19,12 @@ STATUS = {1:"\033[1;32;40mSUCCEEDED\033[0m",
           2: "\033[1;33;40mTIMEOUT\033[0m"}
 TIMEOUT = 60
 
+'''
+This class creates a client for the user to gain the access of the local server directory
+specified with the hostname and the port number later in the main functino.
+It allows the user to access and modify files in the local server directory with
+operations provided by the server.
+'''
 class Client:
 
     def __init__(self, host, port, cache_dir):
@@ -36,6 +42,12 @@ class Client:
         self.request___ = ""
         self.one_copy_semantics_ = ""
     
+    '''
+    This operation allows the users to print 
+    a file from offset till the number of bytes specified.
+    If the file is available in the cache, the client will
+    read it off directly from cache.
+    '''
     def __READ__(self, pathname, offset, b2r):
         self.client_req_ = "READ"
         if self.cache_.__data_exist__(pathname,offset,b2r) == True:
@@ -70,6 +82,14 @@ class Client:
                 self.__receive__()
                 if self.status_ == 2: return
 
+
+    '''
+    This operation allows the users to insert 
+    a string starting from the offset.
+    If the file is available in cache,
+    the client will modify the file in cache,
+    and request an update to the server.
+    '''
     def __WRITE__(self, pathname, offset, b2w):
         self.client_req_ = "WRITE"
         self.__send__(self.client_req_)
@@ -106,6 +126,11 @@ class Client:
                 self.__receive__()
                 if self.status_ == 2: return
     
+    
+    '''
+    This operation allows the users to "observe" the updates / changes
+    made to a specific file during a period of time.
+    '''
     def __MONITOR__(self, pathname, length):
         self.client_req_ = "MONITOR"
         self.__send__(self.client_req_)
@@ -141,6 +166,14 @@ class Client:
             self.__receive__()
             if self.status_ == 2: return
 
+
+    '''
+    This operation allows the users to rename
+    a file specified.
+    If the file is available in cache,
+    the client will update the name of the file in cache,
+    and request an update to the server.
+    '''
     def __RENAME__(self,pathname,name):
         self.client_req_ = "RENAME"
         self.__send__(self.client_req_)
@@ -173,6 +206,14 @@ class Client:
                 self.__receive__()
                 if self.status_ == 2: return
             
+            
+    '''
+    This operation allows the users to replace
+    a part of content with another string specified from the offset.
+    If the file is available in cache,
+    the client will update the file in cache,
+    and request and update to the server.
+    '''
     def __REPLACE__(self,pathname,offset,b2w):
         self.client_req_ = "REPLACE"
         self.__send__(self.client_req_)
@@ -209,6 +250,14 @@ class Client:
                 self.__receive__()
                 if self.status_ == 2: return
 
+
+    '''
+    This operation allows the users to create
+    new files in the local server directory.
+    If the file the user tries to creates already
+    exists in the directory, the client will ask
+    the user if the user wants to replace it.
+    '''
     def __CREATE__(self,pathname,content):
         self.client_req_ = "CREATE"
         self.__send__(self.client_req_)
@@ -234,6 +283,10 @@ class Client:
             self.__send__(content)
             self.status_ = 1
             
+    '''
+    This is an assistant function for the CREATE operation.
+    It asks the users if they want to overwrite a file.
+    '''
     def __overwrite__(self,content):
         answer = input(
             __unmar__(self.__receive__(p=False)))
@@ -245,6 +298,14 @@ class Client:
             self.__send__(content)
             self.status_ = 1
 
+
+    '''
+    This operation allows the users to erase
+    a chunk of string starting from the offset to the number of bytes specified.
+    If the file is available in cache,
+    the client will modify the file in cache,
+    and request an update to the server.
+    '''
     def __ERASE__(self,pathname,offset,b2e):
         self.client_req_ = "ERASE"
         self.__send__(self.client_req_)
@@ -281,6 +342,11 @@ class Client:
                 self.__receive__()
                 if self.status_ == 2: return
 
+
+    '''
+    This operation allows the users to remove
+    a file from the local server directory.
+    '''
     def __DELETE__(self,pathname):
         self.client_req_ = "DELETE"
         self.__send__(self.client_req_)
@@ -295,6 +361,10 @@ class Client:
             self.__receive__()
             if self.status_ == 2: return
 
+    '''
+    This operation allows the users to see
+    every available files in the local server directory.
+    '''
     def __LS__(self):
         self.client_req_ = "LS"
         self.__send__(self.client_req_)
@@ -304,6 +374,12 @@ class Client:
         if self.status_ == 2: return
         self.status_ = 1
         
+        
+    '''
+    This operation allows the users to remove
+    the clients from the "clients list",
+    and exit the program.
+    '''
     def __DISAPPEAR__(self):
         self.client_req_ = "DISAPPEAR"
         self.__send__(self.client_req_)
@@ -315,8 +391,11 @@ class Client:
                 "\n")
         
 
-
-        
+    '''
+    This function updates the file that exists
+    in cache of all the clients.
+    It is executed when one file is updated through any client.
+    '''
     def __one_copy_semantics__(self):        
         pathname = __unmar__(self.__receive__())
         offset = __unmar__(self.__receive__(),int)
@@ -329,14 +408,24 @@ class Client:
         else:
             print("file does not exist")
         
+        
+    '''
+    This function creates a new UDP socket for the client.
+    '''
     def __create_socket__(self):
         sock = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
         return sock
     
+    '''
+    This function creates client-side cache for the client.
+    '''
     def __create_cache__(self):
         cache = Client_Cache(socket.gethostbyname(socket.gethostname()),self.cache_dir_)
         return cache
     
+    '''
+    This function sends the message / request to the server.
+    '''
     def __send__(self,msg):
         if type(msg) == int:
             msg = str(msg)
@@ -344,12 +433,24 @@ class Client:
         self.socket_.sendto(__mar__(bufsize),self.server_)
         self.socket_.sendto(__mar__(msg),self.server_)
         
+       
+    '''
+    This function calculates a optimal bufsize for a message
+    to be sent to the clients.
+    '''   
     def __get_bufsize__(self,msg):
         k = 1
         while k < len(msg):
             k = k * 2
         return k
         
+    
+    '''
+    This function receives a message sent by the client.
+    An optimal bufsize is received first, and the message is received
+    based on the optimal bufsize.
+    if timeout, return a specific value for status update.
+    '''
     def __receive__(self,p=True):
         timeout = select.select([self.socket_],[],[],TIMEOUT)
         if timeout[0]:
@@ -361,9 +462,16 @@ class Client:
         else:
             self.status_ = 2
     
+    '''
+    This function checks if a file / data
+    exists in the cache.
+    '''
     def __check_cache__(self,data):
         return self.cache_.__data_exist__(data)
     
+    '''
+    This function simply prints the status of the cache
+    '''
     def __from_cache__(self,filename,command):
         c1 = "The file \"%s\" exists in Cache!" % (
             filename)
@@ -371,6 +479,29 @@ class Client:
             command,filename)
         print('\n' + c1 + '\n' + c2 + '\n')
         
+        
+    '''
+    This function checks the input type.
+    It checks whether the input is an integer.
+    '''
+    def __check_input_type__(self,text,input_type):
+        inp = ""
+        while True:
+            inp = input(text)
+            try:
+                inp = int(inp)
+                break
+            except ValueError:
+                print("The value must be %s" % (input_type))
+                continue
+        return inp
+        
+        
+    '''
+    This function gets arguments.
+    Since this was designed for a back-up plan,
+    it will not be used for this project.
+    '''
     def __get_args__(self):
         parser = argparse.ArgumentParser(
             description="Requesting from Server")
@@ -383,6 +514,11 @@ class Client:
         args = parser.parse_args()
         return args
     
+    '''
+    This function checks arguments.
+    Since this was designed for a back-up plan,
+    it will not be used for this project.
+    '''
     def __check_args__(self,args,num):
         if args.filename == None:
             print("Need filename")
@@ -406,6 +542,12 @@ class Client:
                 return False
             return True
         
+        
+    '''
+    This function processes arguments.
+    Since this was designed for a back-up plan,
+    it will not be used for this project.
+    '''
     def __process_args__(self,args):
         if args.request == None:
             print("Need Request")
@@ -434,6 +576,10 @@ class Client:
             if self.__check_args__(args,2):
                 client.__ERASE__(args.filename,args.add_arg1,args.add_arg2)
                 
+                
+    '''
+    This function prints the guidance for the users
+    '''
     def __help__(self):
         print('\033[1m' + "read(r)" + '\033[0m' + " (\033[4mfilename\033[0m, \033[4moffset(int)\033[0m, \033[4mbytes-to-read(int)\033[0m")
         print(" : Read file \"filename\" from offset to the amount of bytes specified")
@@ -488,6 +634,11 @@ class Client:
         print(" : Terminate the client program")
         print('\n')
         
+        
+    '''
+    This function starts the client and asks the user to input the operation.
+    This function will continue until the user types 'quit' or 'q' to quit the program.
+    '''
     def __start__(self):
         print('\n' + '\033[1m' + "================== Welcome to the Client Side ==================" + '\033[0m')
         print("\nThe client will be able to send request to: ")
@@ -584,27 +735,20 @@ class Client:
             print("-------------------- %s --------------------" % (
                 STATUS[self.status_]))
 
-
-    def __check_input_type__(self,text,input_type):
-        inp = ""
-        while True:
-            inp = input(text)
-            try:
-                inp = int(inp)
-                break
-            except ValueError:
-                print("The value must be %s" % (input_type))
-                continue
-        return inp
     
-            
+'''
+Before running, please specify:
+    1. Server name
+    2. Port Number
+    3. Cache_Directory
+'''    
 if __name__ == "__main__":
     server_name = 'e-csy'
     port = 9999
-    cache_dir = "/home/csy/Documents/git/Remote_File_Server/cache/"
-    client = Client(server_name,port,cache_dir)
-    client.__start__()
+    cache_directory = "/home/csy/Documents/git/Remote_File_Server/cache/"
     
-    # args = client.__get_args__()
-    # client.__process_args__(args)
+    client = Client(server_name,port,cache_directory)
+    
+    client.__start__()
+
     

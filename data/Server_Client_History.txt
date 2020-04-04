@@ -871,3 +871,9 @@ Client: 127.0.0.1	Port: 9999	Request: ALLC file "hello.txt" Failed	Time: 2020-04
 Client: 127.0.0.1	Port: 9999	Request: READ file "hello.txt" Succeeded	Time: 2020-04-05 03:55:12
 Client: 127.0.0.1	Port: 9999	Request: ALLC file "hello.txt" Succeeded	Time: 2020-04-05 03:55:13
 Client: 127.0.0.1	Port: 9999	Request: READ file "hello.txt" Succeeded	Time: 2020-04-05 03:58:27
+Client: 127.0.0.1	Port: 9999	Request: LS file "ALL" Succeeded	Time: 2020-04-05 05:52:02
+Client: 127.0.0.1	Port: 9999	Request: READ file "text.txt" Succeeded	Time: 2020-04-05 05:52:08
+Client: 127.0.0.1	Port: 9999	Request: WRITE file "text.txt" Succeeded	Time: 2020-04-05 05:52:22
+Client: 127.0.0.1	Port: 9999	Request: LS file "ALL" Succeeded	Time: 2020-04-05 05:52:27
+Client: 127.0.0.1	Port: 9999	Request: LS file "ALL" Succeeded	Time: 2020-04-05 05:52:38
+Client: 127.0.0.1	Port: 9999	Request: DISAPPEAR	Succeeded	Time: 2020-04-05 05:52:41

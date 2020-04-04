@@ -260,3 +260,5 @@ File: CZ4013.txt	Deleted	2020-04-05 04:41:51
 File: hello.txt	Created	2020-04-05 04:42:20
 File: text.txt	Created	2020-04-05 04:43:23
 File: text.txt	Modified from Erase Operation	2020-04-05 04:43:29
+File: text.txt	Created	2020-04-05 05:52:08
+File: text.txt	Modified from Write Operation	2020-04-05 05:52:22

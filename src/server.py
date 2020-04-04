@@ -17,6 +17,10 @@ from mar_unmar_shall import __marshall__ as __mar__
 from mar_unmar_shall import __unmarshall__ as __unmar__
 
 '''
+Everything except for the last three are Strings
+CUR == current time
+status = the status that will be printed at the end of operation
+timeout = timeouts for operations
 '''
 WALL = "==============="
 END_OF_REQUEST = "================ END ================"
@@ -85,7 +89,8 @@ class Server():
 
 
     '''
-    
+    This operation allows the clients to print 
+    a file from offset till the number of bytes specified.
     '''
     def __READ__(self):
         self.req_file_ = self.__receive__()
@@ -133,7 +138,10 @@ class Server():
             self.__send__(self.server_msg_)
             self.__send__(str(self.status_))
         
-        
+    '''
+    This operation allows the clients to insert 
+    a string starting from the offset.
+    '''
     def __WRITE__(self):
         cache = self.__receive__()
         if self.status_ == 2: return
@@ -213,7 +221,10 @@ class Server():
                 __unmar__(offset,int),
                 __unmar__(b2w))
             
-    
+    '''
+    This operation allows the clients to "observe" the updates / changes
+    made to a specific file during a period of time.
+    '''
     def __MONITOR__(self):
         self.req_file_ = self.__receive__()
         if self.status_ == 2: return
@@ -259,7 +270,10 @@ class Server():
             
             self.status_ = 1
 
-        
+    '''
+    This is an assistnant function for MONITOR operation.
+    It constantly receives the updates / changes of the file specified.
+    '''
     def __monitoring__(self,filename,ori_content,des):
         global CUR
         while CUR < des:
@@ -281,6 +295,10 @@ class Server():
         self.__send__(self.server_msg_)
             
         
+    '''
+    This operation allows the clients to rename
+    a file specified.
+    '''
     def __RENAME__(self):
         cache = self.__receive__()
         if self.status_ == 2: return
@@ -339,7 +357,10 @@ class Server():
                 __unmar__(self.req_file_),
                 __unmar__(name))
         
-    
+    '''
+    This operation allows the clients to replace
+    a part of content with another string specified from the offset.
+    '''
     def __REPLACE__(self):
         cache = self.__receive__()
         if self.status_ == 2: return
@@ -421,7 +442,10 @@ class Server():
                 __unmar__(offset,int),
                 __unmar__(b2w))
         
-    
+    '''
+    This operation allows the clients to create
+    new files in the local server directory.
+    '''
     def __CREATE__(self):
         self.req_file_ = self.__receive__()
         if self.status_ == 2: return
@@ -469,7 +493,10 @@ class Server():
                 __unmar__(content))
             self.status_ = 1
     
-    
+    '''
+    This is an assistnant function for CREATE % Rename operation.
+    It asks the clients if it wants to overwrite an existing file.
+    '''
     def __overwrite__(self):
         self.server_msg_ = "The file \"%s\" already exists in the server directory.\n\
     Do you want to overwrite it[Y/n]: " % (__unmar__(self.req_file_))
@@ -488,6 +515,10 @@ class Server():
             self.status_ = 1
 
         
+    '''
+    This operation allows the clients to erase
+    a chunk of string starting from the offset to the number of bytes specified.
+    '''
     def __ERASE__(self):
         cache = self.__receive__()
         if self.status_ == 2: return
@@ -570,6 +601,10 @@ class Server():
                 __unmar__(b2e))
         
     
+    '''
+    This operation allows the clients to remove
+    a file from the local server directory.
+    '''
     def __DELETE__(self):
         self.req_file_ = self.__receive__()
         if self.status_ == 2: return
@@ -589,6 +624,10 @@ class Server():
             self.status_ = 1
 
 
+    '''
+    This operation allows the clients to see
+    every available files in the local server directory.
+    '''
     def __LS__(self):
         self.server_msg_ = "List all files on Server Directory"
         print('\n\t' + self.server_msg_ + '\n')
@@ -603,6 +642,11 @@ class Server():
         self.status_ = 1
     
     
+    '''
+    This operation allows the clients to remove
+    themselves from the "clients list",
+    and exit the client program.
+    '''
     def __DISAPPEAR__(self):
         print("\n\t%s from clients list\n" % (__unmar__(self.client_req_)))
         self.req_file_ = __mar__("")
@@ -613,12 +657,11 @@ class Server():
 
 
 
-
-
-
-
-
-    
+    '''
+    This function updates the file that exists
+    in cache of all the clients.
+    It is executed when one file is updated through any client.
+    '''
     def __one_copy_semantics__(self,filename,arg1,arg2=None):
         messages = [filename]
         if arg2 == None:
@@ -633,6 +676,11 @@ class Server():
                     self.socket_.sendto(__mar__(bufsize),cli)
                     self.socket_.sendto(__mar__(msg),cli)
  
+    
+    
+    '''
+    This function sends msg to client.
+    '''
     def __send__(self,msg):
         if type(msg) != str:
             msg = str(msg)
@@ -640,13 +688,23 @@ class Server():
         self.socket_.sendto(__mar__(bufsize),self.client_)
         self.socket_.sendto(__mar__(msg),self.client_)
     
-    
+    '''
+    This function calculates a optimal bufsize for a message
+    to be sent to the clients.
+    '''
     def __get_bufsize__(self,msg):
         k = 1
         while k < len(msg):
             k = k * 2
         return k
     
+    
+    '''
+    This function receives a message sent by the client.
+    An optimal bufsize is received first, and the message is received
+    based on the optimal bufsize.
+    if timeout, return a specific value for status update.
+    '''
     def __receive__(self):
         timeout = select.select([self.socket_],[],[],TIMEOUT)
         if timeout[0]:
@@ -656,6 +714,11 @@ class Server():
         else:
             self.status_ = 2
             
+    
+    '''
+    This function creates a new socket for the server
+    and binds the host with a port specified from one of the arguments.
+    '''
     def __create_socket__(self, host, port):
         print("Creating UDP socket...")
         sock = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
@@ -664,6 +727,12 @@ class Server():
         print("Socket created")
         return sock
     
+    
+    '''
+    This function creates file in the directory specified.
+    It checks if the file exists in the directory, and if
+    the file does not exist, it creates the file.
+    '''
     def __create_file__(self,directory,filename,content=None):
         if self.__file_exist__(directory,filename):
             existing = open(directory+filename)
@@ -678,6 +747,11 @@ class Server():
                 new_file.close()
                 return new_file
             
+            
+    '''
+    This function checks if a certain file exists
+    in the local server directory.
+    '''
     def __check_server_directory__(self,filename):
         p = False
         if self.__file_exist__(self.serv_dir_,__unmar__(filename)):
@@ -690,11 +764,19 @@ class Server():
             self.__send__(self.server_msg_)
         return p
             
-    
+    '''
+    This functions checks if a certain file 
+    exists in the directory specified.
+    '''
     def __file_exist__(self,directory,filename):
         return os.path.isfile(directory+filename)
             
     
+    
+    '''
+    This function records the new client who requested
+    to do any operation available above.
+    '''
     def __record_client__(self,client):
         if self.__file_exist__(DATA_DIR,CLIENT_FILE):
             f = open(DATA_DIR+CLIENT_FILE,'r')
@@ -705,6 +787,12 @@ class Server():
                 self.client_file_.write(client+'\n')
                 self.client_file_.close()
         
+        
+        
+    '''
+    This function adds a client to the client list
+    that is specifically for one-copy-semantic system.
+    '''
     def __append_client__(self,client):
         try:
             self.clients_.remove(client)
@@ -712,6 +800,11 @@ class Server():
         except ValueError:
             self.clients_.appendleft(client)
 
+    '''
+    This function records a history of operations
+    requested by the clients.
+    It is saved in "data" directory.
+    '''
     def __record__(self):
         self.history_ = open(DATA_DIR+HIST_FILE,'a')
         succ = 'Succeeded'
@@ -735,6 +828,10 @@ class Server():
                 succ + "\tTime: " + curr_time + "\n")
         self.history_.close()
         
+        
+    '''
+    This function constantly updates the current time.
+    '''
     def __update_time__(self):
         global CUR
         while True:
@@ -742,12 +839,19 @@ class Server():
             time.sleep(0.2)
         
 
+'''
+Before running, please specify:
+    1. hostname
+    2. port number
+    3. server directory
+'''
 if __name__ == "__main__":
     hostname = socket.gethostname()
-    port = 9999
-    serv_dir = "/home/csy/Documents/git/Remote_File_Server/Server_Directory/"
-    serv = Server(hostname,port,serv_dir)
-##    serv.start_server_.start()
+    port_number = 9999
+    server_directory = "/home/csy/Documents/git/Remote_File_Server/Server_Directory/"
+    
+    serv = Server(hostname,port_number,server_directory)
+
     serv.__start__()
     
 

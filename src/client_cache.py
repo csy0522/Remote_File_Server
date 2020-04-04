@@ -17,7 +17,12 @@ DATA_DIR = "../data/"
 CUR = datetime.now()
 CACHE_TIME = 60
 
-
+'''
+This class creates a cache for the client.
+It saves the file requested by the client in order to
+increase the speed of reading and to opearte certain semantics.
+The cache for each client is in a dictionary form.
+'''
 class Client_Cache:
     
     def __init__(self,client,cache_dir):
@@ -29,6 +34,10 @@ class Client_Cache:
         self.time_thread_ = threading.Thread(target=self.__update_time__,daemon=True)
         self.time_thread_.start()
         
+    '''
+    The client reads the "filename" from cache
+    if the file exists in the cache.
+    '''
     def __READ__(self,filename,offset,b2r):
         offset_,content_,last_index_,_ = self.storage_[filename]
         if b2r == -1:
@@ -36,6 +45,10 @@ class Client_Cache:
         print(self.storage_[filename][1][offset-offset_:offset-offset_+b2r])
         self.__update_history__("READ",filename,success=True)
     
+    '''
+    The client writes the "filename" from cache
+    if the file exists in the cache.
+    '''
     def __WRITE__(self,filename,offset,b2w):
         offset_,content,last_index_,_ = self.storage_[filename]
         new_content = self.storage_[filename][1][:offset-offset_]+\
@@ -45,6 +58,10 @@ class Client_Cache:
         self.__update_log__(filename,"Modified from Write Operation")
         print(new_content+'\n')
 
+    '''
+    The client renames the "filename" from cache
+    if the file exists in the cache.
+    '''
     def __RENAME__(self,filename,name):
         offset_,content,last_index_,_ = self.storage_[filename]
         self.__del__(filename)
@@ -52,6 +69,10 @@ class Client_Cache:
         self.__update_history__("RENAME",filename,success=True)
         self.__update_log__(filename,"Modified from Rename Operation")
 
+    '''
+    The client replaces the "filename" from cache
+    if the file exists in the cache.
+    '''
     def __REPLACE__(self,filename,offset,b2w):
         offset_,content,last_index_,_ = self.storage_[filename]
         new_content = self.storage_[filename][1][:offset-offset_]+\
@@ -63,6 +84,10 @@ class Client_Cache:
         self.__update_log__(filename,"Modified from Replace Operation")
         print(new_content+'\n')
 
+    '''
+    The client erases the "filename" from cache
+    if the file exists in the cache.
+    '''
     def __ERASE__(self,filename,offset,b2e):
         offset_,content,last_index_,_ = self.storage_[filename]
         new_content = self.storage_[filename][1][:offset-offset_]+\
@@ -73,6 +98,10 @@ class Client_Cache:
         self.__update_log__(filename,"Modified from Erase Operation")
         print(new_content+'\n')
 
+    '''
+    This operation allows the client to see
+    all the existing files in cache.
+    '''
     def __LS__(self):
         print("\nList all files in Cache")
         print('\n================= CACHE =================')
@@ -80,14 +109,23 @@ class Client_Cache:
             print("\t%s" % (k))
         print('================= END =================\n')
 
+    '''
+    This function adds a data / file into the dictionary cache.
+    '''
     def __add__(self,key,content,offset,last_index):
         self.storage_[key] = [offset,content,last_index,CUR+timedelta(seconds=CACHE_TIME)]
         self.__update_log__(key,"Created")
 
+    '''
+    This function removes a data / file from the dictionary cache.
+    '''
     def __del__(self,key):
         self.__update_log__(key,"Deleted")
         del self.storage_[key]
-        
+    
+    '''
+    This function checks if a data / file exists in the cache directory.
+    '''    
     def __data_exist__(self,data,offset=None,b2r=None):
         if data in self.storage_:
             if offset == None:
@@ -102,6 +140,10 @@ class Client_Cache:
                 return True
         return False
     
+    '''
+    This function creates a file in the directory specified
+    only if the file does not exist in the directory.
+    '''
     def __create_file__(self,directory,filename,content=None):
         if self.__file_exist__(directory,filename):
             existing = open(directory+filename)
@@ -115,9 +157,18 @@ class Client_Cache:
             else:
                 new_file.close()
                 return new_file
+            
+    '''
+    This function checks if the 'filename' exists
+    in the directory specified.
+    '''
     def __file_exist__(self,directory,filename):
         return os.path.isfile(directory+filename)
             
+    
+    '''
+    This function constantly updates the current time.
+    '''
     def __update_time__(self):
         global CUR
         while True:
@@ -125,12 +176,22 @@ class Client_Cache:
             self.__update_cache__()
             time.sleep(0.5)
             
+    
+    '''
+    This function sycs the cache directory.
+    A file is removed from the cahce
+    after a certain period of time.
+    '''
     def __update_cache__(self):
         global CUR
         for k,v in list(self.storage_.items()):
             if v[3] < CUR:
                 self.__del__(k)
-                
+    
+    '''
+    Thie function writes down a log
+    for the cache.
+    '''
     def __update_log__(self,key,what):
         global CUR
         self.logfile_ = open(DATA_DIR+LOG_FILE,'a')
@@ -140,12 +201,20 @@ class Client_Cache:
                             CUR.strftime("%Y-%m-%d %H:%M:%S")+"\n")
         self.logfile_.close()
         
+    '''
+    This function gets the current time.
+    '''
     def __get_time__(self):
         global CUR
         print("\n========== CURRENT TIME ==========\n")
         print('\t' + CUR.strftime("%Y-%m-%d %H:%M:%S"))
         print("\n=====================================")
 
+
+    '''
+    This function records and updates the history
+    from the operation the client requested
+    '''
     def __update_history__(self,request,filename,success):
         succ = "Failed"
         if success == True:
@@ -156,21 +225,5 @@ class Client_Cache:
                             "\tRequest: " + request + "\"" + 
                             filename + "\"\t" + succ + "\t" + curr_time + '\n')
         self.history_.close()
-        
-        
-        
-        
-        
-        
-
-        
-        
-        
-        
-        
-        
-        
-        
-        
         
         
