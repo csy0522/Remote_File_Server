@@ -1,5 +1,4 @@
 # Remote_File_Server
-# This project is currently under development. It will be ready soon...
 
 This project creates a local file server: <br/>
 
@@ -25,7 +24,6 @@ Choose your own Server Directory & transfer files remotely.
 
 * [Python](https://www.python.org/) - The Programming Language
 * [socket](https://docs.python.org/3/library/socket.html) - Python Module Providing Access To the BSD Socket Interface
-* [fcache](https://fcache.readthedocs.io/en/stable/) - A Dictionary-Like, File-Based Cache Module For Python
 
 ## Author
 
