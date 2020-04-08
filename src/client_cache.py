@@ -25,9 +25,8 @@ The cache for each client is in a dictionary form.
 '''
 class Client_Cache:
     
-    def __init__(self,client,cache_dir):
+    def __init__(self,client):
         self.storage_ = dict()
-        self.cache_dir_ = cache_dir
         self.history_ = self.__create_file__(DATA_DIR,CACHE_CLIENT_FILE)
         self.logfile_ = self.__create_file__(DATA_DIR,LOG_FILE)
         self.client_ = client
@@ -56,7 +55,7 @@ class Client_Cache:
         self.storage_[filename] = [offset_,new_content,last_index_+len(b2w),_]
         self.__update_history__("WRITE",filename,success=True)
         self.__update_log__(filename,"Modified from Write Operation")
-        print(new_content+'\n')
+        print("Cache File:\n" + new_content)
 
     '''
     The client renames the "filename" from cache
@@ -82,7 +81,7 @@ class Client_Cache:
         self.storage_[filename] = [offset_,new_content,last_index_,_]
         self.__update_history__("REPLACE",filename,success=True)
         self.__update_log__(filename,"Modified from Replace Operation")
-        print(new_content+'\n')
+        print("Cache File:\n" + new_content)
 
     '''
     The client erases the "filename" from cache
@@ -96,7 +95,7 @@ class Client_Cache:
         self.storage_[filename] = [offset_,new_content,last_index_,_]
         self.__update_history__("ERASE",filename,success=True)
         self.__update_log__(filename,"Modified from Erase Operation")
-        print(new_content+'\n')
+        print("Cache File:\n" + new_content)
 
     '''
     This operation allows the client to see

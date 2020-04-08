@@ -262,3 +262,15 @@ File: text.txt	Created	2020-04-05 04:43:23
 File: text.txt	Modified from Erase Operation	2020-04-05 04:43:29
 File: text.txt	Created	2020-04-05 05:52:08
 File: text.txt	Modified from Write Operation	2020-04-05 05:52:22
+File: hello.txt	Created	2020-04-06 19:26:00
+File: hello.txt	Created	2020-04-08 02:42:29
+File: hello.txt	Deleted	2020-04-08 02:43:29
+File: hello.txt	Created	2020-04-08 19:03:28
+File: hello.txt	Modified from Write Operation	2020-04-08 19:03:37
+File: hello.txt	Created	2020-04-08 19:05:18
+File: hello.txt	Deleted	2020-04-08 19:06:18
+File: hello.txt	Created	2020-04-08 19:06:33
+File: hello.txt	Modified from Write Operation	2020-04-08 19:06:44
+File: text.txt	Created	2020-04-08 19:07:28
+File: hello.txt	Deleted	2020-04-08 19:07:33
+File: text.txt	Modified from Write Operation	2020-04-08 19:07:46
