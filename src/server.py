@@ -123,8 +123,8 @@ class Server():
         self.__send__(self.server_msg_)
         self.__send__(self.status_)
                 
-        if self.status_ == 1:
-            self.__one_copy_semantics__(self.req_file_,offset,b2w)
+##        if self.status_ == 1:
+##            self.__one_copy_semantics__(self.req_file_,offset,b2w)
             
 
 
@@ -210,8 +210,8 @@ class Server():
         self.__send__(self.server_msg_)
         self.__send__(self.status_)
         
-        if self.status_ == 1:
-            self.__one_copy_semantics__(self.req_file_,new_name)
+##        if self.status_ == 1:
+##            self.__one_copy_semantics__(self.req_file_,new_name)
 
             
         
@@ -244,8 +244,8 @@ class Server():
         self.__send__(self.server_msg_)
         self.__send__(self.status_)
         
-        if self.status_ == 1:
-            self.__one_copy_semantics__(self.req_file_,offset,b2w)
+##        if self.status_ == 1:
+##            self.__one_copy_semantics__(self.req_file_,offset,b2w)
 
 
         
@@ -344,8 +344,8 @@ class Server():
         self.__send__(self.server_msg_)
         self.__send__(self.status_)
             
-        if self.status_ == 1:
-            self.__one_copy_semantics__(self.req_file_,offset,b2e)
+##        if self.status_ == 1:
+##            self.__one_copy_semantics__(self.req_file_,offset,b2e)
 
         
     
@@ -659,7 +659,7 @@ Before running, please specify:
     3. server directory
 '''
 if __name__ == "__main__":
-    hostname = socket.gethostname()
+s    hostname = socket.gethostname()
     
     '''Server Directory in Linux Machine'''
     server_directory = "/home/csy/Documents/git/Remote_File_Server/Server_Directory/"

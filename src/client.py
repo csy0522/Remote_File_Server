@@ -673,61 +673,7 @@ if __name__ == "__main__":
 
 
 
-    '''
-    This function starts the client.
-    Since the client is in a while loop,
-    it will continuously ask user for inputs.
-    '''
-##    def __alo__(self):
-##        print('\n' + '\033[1m' + "================== Welcome to the Client Side ==================" + '\033[0m')
-##        print("\nThe client will be able to send request to: ")
-##        print("Server: " + '\033[1m' + self.host_ + '\033[0m' + "\t Port: " + '\033[1m' + str(self.port_) + '\033[0m' + "\n")
-##        print("The following are the available request from client to server: \n")
-##        self.__help__()
-##        while True:
-##            self.status_ = 0
-##            self.request_ = input("\nEnter your request: ")
-##            if self.request_ not in SERV_OP:
-##                if self.request_ not in CLI_OP:
-##                    print("\nNo Such Operation.\nPlease Enter Again.")
-##                    continue
-##                else:
-##                    eval("self.__" + CLI_OP[self.request_] + "__")()
-##                    print(STATUS[self.status_])
-##            else:
-##                self.inputs_ = self.__get_inputs__()
-##                eval("self.__" + SERV_OP[self.request_] + "__")()
-##                if self.semantics_ == "alo":
-##                    while self.status_ == 2:
-##                        print(STATUS[self.status_])
-##                        print("\nRequesting Again...")
-##                        eval("self.__" + SERV_OP[self.request_] + "__")()
-##                print(STATUS[self.status_])
-    '''
-    This function starts the client.
-    Since the client is in a while loop,
-    it will continuously ask user for inputs.
-    '''
-##    def __amo__(self):
-##        print('\n' + '\033[1m' + "================== Welcome to the Client Side ==================" + '\033[0m')
-##        print("\nThe client will be able to send request to: ")
-##        print("Server: " + '\033[1m' + self.host_ + '\033[0m' + "\t Port: " + '\033[1m' + str(self.port_) + '\033[0m' + "\n")
-##        print("The following are the available request from client to server: \n")
-##        self.__help__()
-##        while True:
-##            self.status_ = 0
-##            self.request_ = input("\nEnter your request: ")
-##            if self.request_ not in SERV_OP:
-##                if self.request_ not in CLI_OP:
-##                    print("\nNo Such Operation.\nPlease Enter Again.")
-##                    continue
-##                else:
-##                    eval("self.__" + CLI_OP[self.request_] + "__")()
-##                    print(STATUS[self.status_])
-##            else:
-##                self.inputs_ = self.__get_inputs__()
-##                eval("self.__" + SERV_OP[self.request_] + "__")()
-##                print(STATUS[self.status_])
+ 
        
 ##    def __start__(self):
 ##        print('\n' + '\033[1m' + "================== Welcome to the Client Side ==================" + '\033[0m')

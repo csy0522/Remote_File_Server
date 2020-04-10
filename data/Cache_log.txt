@@ -310,3 +310,40 @@ File: hello.txt	Deleted	2020-04-10 21:51:17
 File: hello.txt	Created	2020-04-10 21:59:21
 File: hello.txt	Created	2020-04-10 22:25:17
 File: hello.txt	Created	2020-04-10 22:26:20
+File: hello.txt	Created	2020-04-10 22:53:47
+File: hello.txt	Modified from Write Operation	2020-04-10 22:53:57
+File: hello.txt	Modified from Erase Operation	2020-04-10 22:54:07
+File: hello.txt	Deleted	2020-04-10 22:54:48
+File: hello.txt	Created	2020-04-10 22:55:07
+File: hello.txt	Modified from Write Operation	2020-04-10 22:55:15
+File: hello.txt	Modified from Write Operation	2020-04-10 22:55:43
+File: hello.txt	Deleted	2020-04-10 22:56:07
+File: power.txt	Created	2020-04-10 22:56:42
+File: power.txt	Deleted	2020-04-10 22:56:55
+File: hello.txt	Created	2020-04-10 22:56:55
+File: power.txt	Modified from Rename Operation	2020-04-10 22:56:55
+File: hello.txt	Created	2020-04-10 23:02:41
+File: hello.txt	Modified from Write Operation	2020-04-10 23:02:58
+File: hello.txt	Deleted	2020-04-10 23:03:41
+File: hello.txt	Created	2020-04-10 23:04:25
+File: hello.txt	Deleted	2020-04-10 23:04:38
+File: world.txt	Created	2020-04-10 23:04:38
+File: hello.txt	Modified from Rename Operation	2020-04-10 23:04:38
+File: world.txt	Deleted	2020-04-10 23:04:44
+File: hello.txt	Created	2020-04-10 23:04:44
+File: world.txt	Modified from Rename Operation	2020-04-10 23:04:44
+File: hello.txt	Modified from Replace Operation	2020-04-10 23:05:00
+File: hello.txt	Deleted	2020-04-10 23:05:44
+File: hello.txt	Created	2020-04-10 23:13:16
+File: hello.txt	Created	2020-04-10 23:13:20
+File: hello.txt	Modified from Write Operation	2020-04-10 23:13:43
+File: hello.txt	Modified from Write Operation	2020-04-10 23:13:52
+File: hello.txt	Deleted	2020-04-10 23:14:16
+File: hello.txt	Deleted	2020-04-10 23:14:20
+File: hello.txt	Created	2020-04-10 23:19:51
+File: hello.txt	Created	2020-04-10 23:20:01
+File: hello.txt	Deleted	2020-04-10 23:20:51
+File: hello.txt	Deleted	2020-04-10 23:21:01
+File: hello.txt	Created	2020-04-11 00:04:56
+File: hello.txt	Modified from Write Operation	2020-04-11 00:05:07
+File: hello.txt	Deleted	2020-04-11 00:05:56
