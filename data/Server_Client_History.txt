@@ -1056,3 +1056,10 @@ Client: 127.0.0.1	Port: 9999	Request: DISAPPEAR	Succeeded	Time: 2020-04-10 18:48
 Client: 127.0.0.1	Port: 9999	Request: DISAPPEAR	Succeeded	Time: 2020-04-10 18:48:15
 Client: 127.0.0.1	Port: 9999	Request: DISAPPEAR	Succeeded	Time: 2020-04-10 19:05:57
 Client: 127.0.0.1	Port: 9999	Request: READ file "hello.txt" Succeeded	Time: 2020-04-10 20:02:37
+Client: 127.0.0.1	Port: 2000	Request: LS file "ALL" Succeeded	Time: 2020-04-10 20:33:40
+Client: 127.0.0.1	Port: 2000	Request: READ file "hello.txt" Succeeded	Time: 2020-04-10 20:33:48
+Client: 127.0.0.1	Port: 9999	Request: LS file "ALL" Succeeded	Time: 2020-04-10 20:42:22
+Client: 127.0.0.1	Port: 9999	Request: DISAPPEAR	Succeeded	Time: 2020-04-10 20:42:24
+Client: 127.0.0.1	Port: 9090	Request: LS file "ALL" Succeeded	Time: 2020-04-10 21:23:06
+Client: 127.0.0.1	Port: 9090	Request: LS file "ALL" Succeeded	Time: 2020-04-10 21:26:14
+Client: 127.0.0.1	Port: 9090	Request: DISAPPEAR	Succeeded	Time: 2020-04-10 21:26:15

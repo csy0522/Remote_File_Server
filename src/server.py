@@ -44,10 +44,10 @@ Detailed explanations will be written on top of each functions.
 '''
 class Server():
     
-    def __init__(self, host,serv_dir):
+    def __init__(self,host,serv_dir):
         self.host_ = host
         self.port_ = None
-        self.socket_ = None
+##        self.server_ = None
         self.serv_dir_ = serv_dir
 ##        self.socket_ = self.__create_socket__(self.host_, self.port_)
         self.history_ = self.__create_file__(DATA_DIR,HIST_FILE)
@@ -600,7 +600,6 @@ class Server():
     '''
     def __start__(self):
         global CUR
-        self.socket_ = self.__create_socket__(self.host_, self.port_)
         while True:
             self.status_ = 0
             print("\nWaiting to receive message...\n")
@@ -649,6 +648,8 @@ class Server():
             try:
                 args.port = int(args.port)
                 self.port_ = args.port
+##                self.server_ = (self.host_,self.port_)
+                self.socket_ = self.__create_socket__(self.host_, self.port_)
                 self.__start__()
             except ValueError:
                 print("The value must be integer!")
@@ -669,7 +670,6 @@ Before running, please specify:
 '''
 if __name__ == "__main__":
     hostname = socket.gethostname()
-##    port_number = 9999
     
     '''Server Directory in Linux Machine'''
     server_directory = "/home/csy/Documents/git/Remote_File_Server/Server_Directory/"
@@ -678,6 +678,7 @@ if __name__ == "__main__":
 ##    server_directory = r"C:\Users\CSY\Desktop\Spring 2020\git\Remote_File_Server\Server_Directory\\"
 
     server = Server(hostname,server_directory)
+
     args = server.__get_args__()
     server.__process_args__(args)
 

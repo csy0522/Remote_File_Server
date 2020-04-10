@@ -68,12 +68,12 @@ operations provided by the server.
 '''
 class Client:
 
-    def __init__(self,host):
-        self.host_ = host
+    def __init__(self):
+        self.host_ = None
+        self.port_ = None
+##        self.server_ = (self.host_, self.port_)
         self.socket_ = self.__create_socket__()
         self.cache_ = self.__create_cache__()
-        self.port_ = None
-        self.server_ = None
         self.server_addr_ = None
         self.inputs_ = []
         self.request_ = ""
@@ -720,6 +720,8 @@ class Client:
     def __start__(self):
         print('\n' + '\033[1m' + "================== Welcome to the Client Side ==================" + '\033[0m')
         print("\nThis program provides the tool for the user to access the local server directory\n\n")
+        self.host_ = input("Enter the address of the host ('q' to quit): ")
+        if self.host_.lower() in ['q','quit']:exit()
         self.port_ = self.__check_int_input__("Enter the port number of the host ('q' to quit): ")
         self.server_ = (self.host_, self.port_)
         print("\nThe client will be able to send request to: ")
@@ -758,9 +760,10 @@ Before running, please specify:
 if __name__ == "__main__":
 ##    server_name = 'DESKTOP-0J4QGEB'
 ##    server_name = '192.168.0.103'
-    server_name = 'e-csy'
-    
-    client = Client(server_name)
+##    server_name = 'e-csy'
+
+##    port_number = 9999
+    client = Client()
 
     args = client.__get_args__()
     client.__process_args__(args)
