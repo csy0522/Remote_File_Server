@@ -584,34 +584,7 @@ class Client:
 
 
 
-    '''
-    This function checks arguments.
-    Since this was designed for a back-up plan,
-    it will not be used for this project.
-    '''
-##    def __check_args__(self,args,num):
-##        if args.filename == None:
-##            print("Need filename")
-##            return False
-##        if num == 2:
-##            if args.add_arg1 == None or args.add_arg2 == None:
-##                print("Need both arguments")
-##                return False
-##            return True
-##        elif num == 1:
-##            if args.add_arg1 == None:
-##                print("Need arg 1")
-##                return False
-##            elif args.add_arg2 != None:
-##                print("Don't need arg 2")
-##                return False
-##            return True
-##        elif num == 0:
-##            if args.add_arg1 != None:
-##                print("Do not need any other argument")
-##                return False
-##            return True
-
+    
 
 
 
@@ -638,6 +611,64 @@ class Client:
 
 
 
+
+
+
+
+    
+            
+
+    '''
+    This function starts the client.
+    Since the client is in a while loop,
+    it will continuously ask for input from the user.
+    '''
+    def __start__(self):
+        print('\n' + '\033[1m' + "================== Welcome to the Client Side ==================" + '\033[0m')
+        print("\nThis program provides the tool for the user to access the local server directory\n\n")
+        self.host_ = input("Enter the address of the host ('q' to quit): ")
+        if self.host_.lower() in ['q','quit']:exit()
+        self.port_ = self.__check_int_input__("Enter the port number of the host ('q' to quit): ")
+        self.server_ = (self.host_, self.port_)
+        print("\nThe client will be able to send request to: ")
+        print("Server: " + '\033[1m' + self.host_ + '\033[0m' + "\t Port: " + '\033[1m' + str(self.port_) + '\033[0m' + "\n")
+        print("The following are the available request from client to server: \n")
+        self.__help__()
+        while True:
+            self.status_ = 0
+            self.request_ = input("\nEnter your request: ")
+            if self.request_ not in SERV_OP:
+                if self.request_ not in CLI_OP:
+                    print("\nNo Such Operation.\nPlease Enter Again.")
+                    continue
+                else:
+                    eval("self.__" + CLI_OP[self.request_] + "__")()
+                    print(STATUS[self.status_])
+            else:
+                self.inputs_ = self.__get_inputs__()
+                eval("self.__" + SERV_OP[self.request_] + "__")()
+                if self.semantics_ == "alo":
+                    while self.status_ == 2:
+                        print(STATUS[self.status_])
+                        print("\nRequesting Again...")
+                        eval("self.__" + SERV_OP[self.request_] + "__")()
+                print(STATUS[self.status_])
+
+
+
+
+'''
+Before running, please specify:
+    1. Server name
+    2. Port Number
+    3. Cache_Directory
+'''    
+if __name__ == "__main__":
+    
+    client = Client()
+
+    args = client.__get_args__()
+    client.__process_args__(args)
 
 
 
@@ -713,60 +744,53 @@ class Client:
 ##        print("\nThe following are the available request from client to server: \n")
 ##        self.__help__()
 ##        eval("self.__" + self.semantics_ + "__")()
-            
 
 
-            
-    def __start__(self):
-        print('\n' + '\033[1m' + "================== Welcome to the Client Side ==================" + '\033[0m')
-        print("\nThis program provides the tool for the user to access the local server directory\n\n")
-        self.host_ = input("Enter the address of the host ('q' to quit): ")
-        if self.host_.lower() in ['q','quit']:exit()
-        self.port_ = self.__check_int_input__("Enter the port number of the host ('q' to quit): ")
-        self.server_ = (self.host_, self.port_)
-        print("\nThe client will be able to send request to: ")
-        print("Server: " + '\033[1m' + self.host_ + '\033[0m' + "\t Port: " + '\033[1m' + str(self.port_) + '\033[0m' + "\n")
-        print("The following are the available request from client to server: \n")
-        self.__help__()
-        while True:
-            self.status_ = 0
-            self.request_ = input("\nEnter your request: ")
-            if self.request_ not in SERV_OP:
-                if self.request_ not in CLI_OP:
-                    print("\nNo Such Operation.\nPlease Enter Again.")
-                    continue
-                else:
-                    eval("self.__" + CLI_OP[self.request_] + "__")()
-                    print(STATUS[self.status_])
-            else:
-                self.inputs_ = self.__get_inputs__()
-                eval("self.__" + SERV_OP[self.request_] + "__")()
-                if self.semantics_ == "alo":
-                    while self.status_ == 2:
-                        print(STATUS[self.status_])
-                        print("\nRequesting Again...")
-                        eval("self.__" + SERV_OP[self.request_] + "__")()
-                print(STATUS[self.status_])
+    '''
+    This function checks arguments.
+    Since this was designed for a back-up plan,
+    it will not be used for this project.
+    '''
+##    def __check_args__(self,args,num):
+##        if args.filename == None:
+##            print("Need filename")
+##            return False
+##        if num == 2:
+##            if args.add_arg1 == None or args.add_arg2 == None:
+##                print("Need both arguments")
+##                return False
+##            return True
+##        elif num == 1:
+##            if args.add_arg1 == None:
+##                print("Need arg 1")
+##                return False
+##            elif args.add_arg2 != None:
+##                print("Don't need arg 2")
+##                return False
+##            return True
+##        elif num == 0:
+##            if args.add_arg1 != None:
+##                print("Do not need any other argument")
+##                return False
+##            return True
 
 
 
 
-'''
-Before running, please specify:
-    1. Server name
-    2. Port Number
-    3. Cache_Directory
-'''    
-if __name__ == "__main__":
-##    server_name = 'DESKTOP-0J4QGEB'
-##    server_name = '192.168.0.103'
-##    server_name = 'e-csy'
 
-##    port_number = 9999
-    client = Client()
 
-    args = client.__get_args__()
-    client.__process_args__(args)
+
+
+
+
+
+
+
+
+
+
+
+    
 
     
 

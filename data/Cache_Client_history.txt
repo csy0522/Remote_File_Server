@@ -93,3 +93,4 @@ Client: 127.0.1.1	Request: WRITE"hello.txt"	Succeed	2020-04-10 17:13:18
 Client: 127.0.1.1	Request: READ"hello.txt"	Succeed	2020-04-10 17:13:35
 Client: 127.0.1.1	Request: READ"hello.txt"	Succeed	2020-04-10 17:43:04
 Client: 127.0.1.1	Request: ERASE"hello.txt"	Succeed	2020-04-10 17:43:30
+Client: 127.0.1.1	Request: READ"hello.txt"	Succeed	2020-04-10 22:26:55

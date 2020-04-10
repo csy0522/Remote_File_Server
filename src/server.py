@@ -93,10 +93,6 @@ class Server():
 
 
 
-
-
-
-
         
     '''
     This operation allows the clients to insert 
@@ -165,14 +161,6 @@ class Server():
             self.__send__(0)
             self.__send__(self.server_msg_)
         
-    def __compare_with_timeout__(self,a):
-        p = False
-        if a > TIMEOUT:
-            self.server_msg_ = "%s must be smaller than timeout (%d seconds)" % (
-                a, TIMEOUT)
-        else:
-            p = True
-        return p
 
     '''
     This is an assistnant function for MONITOR operation.
@@ -224,6 +212,7 @@ class Server():
         
         if self.status_ == 1:
             self.__one_copy_semantics__(self.req_file_,new_name)
+
             
         
     '''
@@ -258,6 +247,7 @@ class Server():
         if self.status_ == 1:
             self.__one_copy_semantics__(self.req_file_,offset,b2w)
 
+
         
     '''
     This operation allows the clients to create
@@ -290,6 +280,7 @@ class Server():
             
         self.__send__(self.server_msg_)
         self.__send__(self.status_)
+
 
             
     '''
@@ -355,6 +346,7 @@ class Server():
             
         if self.status_ == 1:
             self.__one_copy_semantics__(self.req_file_,offset,b2e)
+
         
     
     '''
@@ -676,8 +668,6 @@ if __name__ == "__main__":
 ##    server_directory = r"C:\Users\CSY\Desktop\Spring 2020\git\Remote_File_Server\Server_Directory\\"
 
     server = Server(hostname,server_directory)
-
-##    self.__start__()
 
     args = server.__get_args__()
     server.__process_args__(args)
