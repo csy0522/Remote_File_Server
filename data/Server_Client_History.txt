@@ -897,3 +897,23 @@ Client: 127.0.0.1	Port: 9999	Request: READ file "test.txt" Failed	Time: 2020-04-
 Client: 127.0.0.1	Port: 9999	Request: LS file "ALL" Succeeded	Time: 2020-04-08 19:07:23
 Client: 127.0.0.1	Port: 9999	Request: READ file "text.txt" Succeeded	Time: 2020-04-08 19:07:28
 Client: 127.0.0.1	Port: 9999	Request: WRITE file "text.txt" Succeeded	Time: 2020-04-08 19:07:47
+Client: 192.168.0.103	Port: 9999	Request: READ file "hel" Failed	Time: 2020-04-10 09:31:45
+Client: 192.168.0.103	Port: 9999	Request: READ file "hello.txt" Failed	Time: 2020-04-10 09:31:53
+Client: 192.168.0.103	Port: 9999	Request: READ file "hello" Failed	Time: 2020-04-10 09:32:06
+Client: 192.168.0.103	Port: 9999	Request: READ file "hello.txt" Failed	Time: 2020-04-10 09:36:06
+Client: 192.168.0.103	Port: 9999	Request: LS file "ALL" Succeeded	Time: 2020-04-10 09:36:09
+Client: 192.168.0.103	Port: 9999	Request: READ file "hello.txt" Failed	Time: 2020-04-10 09:36:17
+Client: 192.168.0.103	Port: 9999	Request: READ file "text.txt" Failed	Time: 2020-04-10 09:36:28
+Client: 192.168.0.103	Port: 9999	Request: READ file "text" Failed	Time: 2020-04-10 09:36:32
+Client: 192.168.0.103	Port: 9999	Request: LS file "ALL" Succeeded	Time: 2020-04-10 09:36:37
+Client: 192.168.0.103	Port: 9999	Request: LS file "ALL" Succeeded	Time: 2020-04-10 09:42:28
+Client: 192.168.0.103	Port: 9999	Request: CREATE file "hallo.txt" Succeeded	Time: 2020-04-10 09:42:42
+Client: 192.168.0.103	Port: 9999	Request: LS file "ALL" Succeeded	Time: 2020-04-10 09:42:46
+Client: 192.168.0.103	Port: 9999	Request: LS file "ALL" Succeeded	Time: 2020-04-10 09:44:38
+Client: 192.168.0.103	Port: 9999	Request: READ file "hello.txt" Succeeded	Time: 2020-04-10 09:44:43
+Client: 192.168.0.103	Port: 9999	Request: LS file "ALL" Succeeded	Time: 2020-04-10 09:44:46
+Client: 192.168.0.103	Port: 9999	Request: CREATE file "halo.txt" Succeeded	Time: 2020-04-10 09:44:56
+Client: 192.168.0.103	Port: 9999	Request: LS file "ALL" Succeeded	Time: 2020-04-10 09:44:58
+Client: 192.168.0.103	Port: 9999	Request: DISAPPEAR	Succeeded	Time: 2020-04-10 09:45:28
+Client: 192.168.0.103	Port: 9999	Request: READ file "hello.txt" Succeeded	Time: 2020-04-10 09:46:14
+Client: 192.168.0.103	Port: 9999	Request: DISAPPEAR	Succeeded	Time: 2020-04-10 09:46:15

@@ -7,6 +7,7 @@ Created on Sun Mar 29 02:16:41 2020
 """
 
 
+import sys
 import socket
 from client_cache import Client_Cache
 import select
@@ -97,8 +98,7 @@ class Client:
             self.__send__(SERV_OP[self.request_])
             for i in self.inputs_:
                 self.__send__(i)
-            response = self.__receive__(p=False)
-            print("\n%s" % (__unmar__(response)))
+            response = self.__receive__()
             if self.status_ == 2 or self.status_ == None: return
             self.status_ = __unmar__(self.__receive__(p=False),int)
             if self.status_ == 2 or self.status_ == None: return
@@ -396,7 +396,7 @@ class Client:
             bufsize,self.server_addr_ = self.socket_.recvfrom(12)
             msg, self.server_addr_ = self.socket_.recvfrom(__unmar__(bufsize,int))
             if p == True:
-                print(__unmar__(msg))
+                print("\n" + __unmar__(msg))
             return msg
         else:
             self.status_ = 2
@@ -688,13 +688,18 @@ Before running, please specify:
     3. Cache_Directory
 '''    
 if __name__ == "__main__":
-    server_name = 'e-csy'
+    server_name = 'DESKTOP-0J4QGEB'
     port = 9999
     
     client = Client(server_name,port)
 
     args = client.__get_args__()
     client.__process_args__(args)
+    
+##    client.__amo__()
+##    client.__alo__()
+
+  
     
 
 

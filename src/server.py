@@ -113,7 +113,7 @@ class Server():
                 if __unmar__(offset,int) > len(content):
                     self.server_msg_ = "\nYour \"offset\" exceeded the length of file content\n"
                 else:
-                    self.server_msg_ = "\nServer File: \n%s%s%s" % (
+                    self.server_msg_ = "%s%s%s" % (
                         content[:__unmar__(offset, int)],
                         __unmar__(b2w),
                         content[__unmar__(offset, int):])
@@ -240,7 +240,7 @@ class Server():
                 else:
                     last_idx = __unmar__(offset,int)+len(
                         __unmar__(b2w))
-                    self.server_msg_ = "\nServer File: \n%s%s%s" % (
+                    self.server_msg_ = "%s%s%s" % (
                         content[:__unmar__(offset, int)],
                         __unmar__(b2w),
                         content[last_idx:])
@@ -348,7 +348,7 @@ class Server():
                 else:
                     if __unmar__(b2e,int) == -1:
                         b2e = __mar__(len(content))
-                    self.server_msg_ = "\nServer File: \n%s%s" % (
+                    self.server_msg_ = "%s%s" % (
                         content[:__unmar__(offset,int)] + \
                         content[__unmar__(b2e,int):])
                     with open(
@@ -642,9 +642,8 @@ Before running, please specify:
 if __name__ == "__main__":
     hostname = socket.gethostname()
     port_number = 9999
-    server_directory = "/home/csy/Documents/git/Remote_File_Server/Server_Directory/"
-    
+##    server_directory = "/home/csy/Documents/git/Remote_File_Server/Server_Directory/"
+    server_directory = r"C:\Users\CSY\Desktop\Spring 2020\git\Remote_File_Server\Server_Directory\\"
     serv = Server(hostname,port_number,server_directory)
 
     serv.__start__()
-    
