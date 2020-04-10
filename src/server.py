@@ -32,7 +32,7 @@ CUR = datetime.now()
 STATUS={1:"\033[1;32;40mSUCCEEDED\033[0m",
         0: "\033[1;31;40mFAILED\033[0m",
         2: "\033[1;33;40mTIMEOUT\033[0m"}
-TIMEOUT = 10
+TIMEOUT = 60
 
 '''
 This Class creates a local file server on the argument specified.
@@ -47,9 +47,8 @@ class Server():
     def __init__(self,host,serv_dir):
         self.host_ = host
         self.port_ = None
-##        self.server_ = None
         self.serv_dir_ = serv_dir
-##        self.socket_ = self.__create_socket__(self.host_, self.port_)
+        self.socket_ = None
         self.history_ = self.__create_file__(DATA_DIR,HIST_FILE)
         self.client_file_ = self.__create_file__(DATA_DIR,CLIENT_FILE)
         self.client_ = ""
@@ -648,7 +647,6 @@ class Server():
             try:
                 args.port = int(args.port)
                 self.port_ = args.port
-##                self.server_ = (self.host_,self.port_)
                 self.socket_ = self.__create_socket__(self.host_, self.port_)
                 self.__start__()
             except ValueError:
@@ -678,6 +676,8 @@ if __name__ == "__main__":
 ##    server_directory = r"C:\Users\CSY\Desktop\Spring 2020\git\Remote_File_Server\Server_Directory\\"
 
     server = Server(hostname,server_directory)
+
+##    self.__start__()
 
     args = server.__get_args__()
     server.__process_args__(args)

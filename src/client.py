@@ -15,7 +15,7 @@ import argparse
 from mar_unmar_shall import __marshall__ as __mar__
 from mar_unmar_shall import __unmarshall__ as __unmar__
 
-TIMEOUT = 10
+TIMEOUT = 60
 STATUS = {
     1:"-------------------- \033[1;32;40mSUCCEEDED\033[0m --------------------",
     0: "-------------------- \033[1;31;40mFAILED\033[0m --------------------",
