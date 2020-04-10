@@ -659,7 +659,7 @@ Before running, please specify:
     3. server directory
 '''
 if __name__ == "__main__":
-s    hostname = socket.gethostname()
+    hostname = socket.gethostname()
     
     '''Server Directory in Linux Machine'''
     server_directory = "/home/csy/Documents/git/Remote_File_Server/Server_Directory/"
