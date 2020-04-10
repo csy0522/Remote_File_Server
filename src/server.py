@@ -580,7 +580,6 @@ class Server():
         global CUR
         while True:
             CUR = datetime.now()
-            time.sleep(0.2)
 
 
 
