@@ -20,7 +20,8 @@ STATUS = {
     1:"-------------------- \033[1;32;40mSUCCEEDED\033[0m --------------------",
     0: "-------------------- \033[1;31;40mFAILED\033[0m --------------------",
     2: "-------------------- \033[1;33;40mTIMEOUT\033[0m --------------------",
-    3: "-------------------- \033[1;36;40mCOMPLETE\033[0m --------------------"
+    3: "-------------------- \033[1;36;40mCOMPLETE\033[0m --------------------",
+    None: "-------------------- \033[1;31;40mReturned None\033[0m --------------------",
     }
 SERV_OP = {
     'read': "READ",'r':"READ",
@@ -67,17 +68,19 @@ operations provided by the server.
 '''
 class Client:
 
-    def __init__(self,host,port):
+    def __init__(self,host):
         self.host_ = host
-        self.port_ = port
         self.socket_ = self.__create_socket__()
         self.cache_ = self.__create_cache__()
-        self.server_ = (self.host_, self.port_)
+        self.port_ = None
+        self.server_ = None
         self.server_addr_ = None
-        self.request_ = ""
         self.inputs_ = []
-        self.status_ = 0
+        self.request_ = ""
+        self.semantics_ = ''
         self.one_copy_semantics_ = ""
+        self.status_ = 0
+        
 
 
     '''
@@ -100,12 +103,12 @@ class Client:
                 self.__send__(i)
             response = self.__receive__()
             if self.status_ == 2 or self.status_ == None: return
-            self.status_ = __unmar__(self.__receive__(p=False),int)
+            self.status_ = self.__receive__(int,False)
             if self.status_ == 2 or self.status_ == None: return
             if self.status_ == 1:
                 self.cache_.__add__(
-                    self.inputs_[0],__unmar__(response),
-                    self.inputs_[1],self.inputs_[1]+len(__unmar__(response)))
+                    self.inputs_[0],response,
+                    self.inputs_[1],self.inputs_[1]+len(response))
             
 
 
@@ -131,7 +134,7 @@ class Client:
             
         self.__receive__()
         if self.status_ == 2 or self.status_ == None: return
-        self.status_ = __unmar__(self.__receive__(p=False),int)
+        self.status_ = self.__receive__(int,False)
         if self.status_ == 2 or self.status_ == None: return
 
 
@@ -145,9 +148,16 @@ class Client:
         self.__send__(SERV_OP[self.request_])
         for i in self.inputs_:
             self.__send__(i)
-        self.__monitoring__()
-        self.status_ = __unmar__(self.__receive__(p=False),int)
-        if self.status_ == 2 or self.status_ == None: return
+        if self.__receive__(int,False) == 1:
+            if self.__receive__(int,False) == 1:
+                self.__monitoring__()
+                self.status_ = 1
+            else:
+                self.__receive__()
+                if self.status_ == 2 or self.status_ == None: return
+        else:
+            self.__receive__()
+            if self.status_ == 2 or self.status_ == None: return
 
     '''
     This is an assistnant function for MONITOR operation.
@@ -157,7 +167,7 @@ class Client:
         self.__receive__()
         if self.status_ == 2 or self.status_ == None: return
         while True:
-            if __unmar__(self.__receive__(p=False),int) == 1:
+            if self.__receive__(int,False) == 1:
                 self.__receive__()
                 if self.status_ == 2 or self.status_ == None: return
                 self.__receive__()
@@ -191,7 +201,7 @@ class Client:
 
         self.__receive__()
         if self.status_ == 2 or self.status_ == None: return
-        self.status_ = __unmar__(self.__receive__(p=False),int)
+        self.status_ = self.__receive__(int,False)
         if self.status_ == 2 or self.status_ == None: return
 
 
@@ -222,7 +232,7 @@ class Client:
 
         self.__receive__()
         if self.status_ == 2 or self.status_ == None: return
-        self.status_ = __unmar__(self.__receive__(p=False),int)
+        self.status_ = self.__receive__(int,False)
         if self.status_ == 2 or self.status_ == None: return
 
 
@@ -239,12 +249,12 @@ class Client:
         for i in self.inputs_:
             self.__send__(i)
 
-        if __unmar__(self.__receive__(p=False),int) == 1:
+        if self.__receive__(int,False) == 1:
             self.__overwrite__(self.inputs_[1])
             
         self.__receive__()
         if self.status_ == 2 or self.status_ == None: return
-        self.status_ = __unmar__(self.__receive__(p=False),int)
+        self.status_ = self.__receive__(int,False)
         if self.status_ == 2 or self.status_ == None: return
 
 
@@ -255,13 +265,11 @@ class Client:
     It asks the users if they want to overwrite a file.
     '''
     def __overwrite__(self,content):
-        answer = input(
-            __unmar__(self.__receive__(p=False)))
-        if self.status_ == 2 or self.status_ == None: return
+        yes = ["","y","yes"]
+        answer = input(self.__receive__())
+        if self.status_ == 2 or self.status_ == None: return        
         self.__send__(answer)
-        if answer == ""\
-        or answer.lower() == 'y'\
-        or answer.lower() == 'yes':
+        if answer.lower() in yes:
             self.__send__(content)
             
 
@@ -288,7 +296,7 @@ class Client:
             
         self.__receive__()
         if self.status_ == 2 or self.status_ == None: return
-        self.status_ = __unmar__(self.__receive__(p=False),int)
+        self.status_ = self.__receive__(int,False)
         if self.status_ == 2 or self.status_ == None: return
 
 
@@ -303,7 +311,7 @@ class Client:
 
         self.__receive__()
         if self.status_ == 2 or self.status_ == None: return
-        self.status_ = __unmar__(self.__receive__(p=False),int)
+        self.status_ = self.__receive__(int,False)
         if self.status_ == 2 or self.status_ == None: return
 
 
@@ -316,7 +324,7 @@ class Client:
         self.__send__(SERV_OP[self.request_])
         self.__receive__()
         if self.status_ == 2 or self.status_ == None: return
-        self.status_ = __unmar__(self.__receive__(p=False),int)
+        self.status_ = self.__receive__(int,False)
         if self.status_ == 2 or self.status_ == None: return
 
 
@@ -332,7 +340,7 @@ class Client:
                 '\033[1m' + "GOOD BYE" + '\033[0m' + 
                 " =======================" + 
                 "\n")
-        self.status_ = __unmar__(self.__receive__(p=False),int)
+        self.status_ = self.__receive__(int,False)
         if self.status_ == 2 or self.status_ == None: return
         exit()
 
@@ -390,13 +398,14 @@ class Client:
     based on the optimal bufsize.
     if timeout, return a specific value for status update.
     '''
-    def __receive__(self,p=True):
+    def __receive__(self,d_type=str,p=True):
         timeout = select.select([self.socket_],[],[],TIMEOUT)
         if timeout[0]:
             bufsize,self.server_addr_ = self.socket_.recvfrom(12)
             msg, self.server_addr_ = self.socket_.recvfrom(__unmar__(bufsize,int))
-            if p == True:
-                print("\n" + __unmar__(msg))
+            msg = __unmar__(msg,d_type)
+            if p == True and msg != None:
+                print("\n%s" % str(msg))
             return msg
         else:
             self.status_ = 2
@@ -444,9 +453,9 @@ class Client:
     It is executed when one file is updated through any client.
     '''
     def __one_copy_semantics__(self):        
-        pathname = __unmar__(self.__receive__())
-        offset = __unmar__(self.__receive__(),int)
-        b2w = __unmar__(self.__receive__())
+        pathname = self.__receive__()
+        offset = self.__receive__(int)
+        b2w = self.__receive__()
         
         if self.cache_.__data_exist__(pathname,offset) == True:
             self.__from_cache__(pathname,self.client_req_)
@@ -462,25 +471,37 @@ class Client:
     This function asks the user the inputs based on the request
     '''
     def __get_inputs__(self):
-
         inputs = []
         for i in FUNC_INPUT[SERV_OP[self.request_]]:
             ip = ''
             if i[1] == int:
-                while True:
-                    ip = input(i[0])
-                    try:
-                        ip = int(ip)
-                        break
-                    except ValueError:
-                        print("The value must be %s" % (i[1]))
-                        continue
+                ip = self.__check_int_input__(i[0])
             else:
                 ip = input(i[0])
-
             inputs.append(ip)
         return inputs
 
+
+
+    def __check_int_input__(self,text):
+        q = ['q','quit']
+        inp = ''
+        while True:
+            inp = input(text)
+            try:
+                inp = int(inp)
+                break
+            except ValueError:
+                if inp.lower() in q:
+                    print("\n" + 
+                        "======================= " + 
+                        '\033[1m' + "GOOD BYE" + '\033[0m' + 
+                        " =======================" + 
+                        "\n")
+                    exit()
+                print("The value must be %s" % (int))
+                continue
+        return inp
 
 
 
@@ -553,9 +574,9 @@ class Client:
     '''
     def __get_args__(self):
         parser = argparse.ArgumentParser(
-            description="The Invocation Semantics for Server/Client System.")
+            description="Specifying the invocation semantics")
         parser.add_argument("Semantics",nargs='?',
-            help="request comment to the server")
+            help="The invocation semantics - type 'amo' for At-Most-Once, 'alo' for At-Least-Once.")
         args = parser.parse_args()
         return args
 
@@ -568,28 +589,28 @@ class Client:
     Since this was designed for a back-up plan,
     it will not be used for this project.
     '''
-    def __check_args__(self,args,num):
-        if args.filename == None:
-            print("Need filename")
-            return False
-        if num == 2:
-            if args.add_arg1 == None or args.add_arg2 == None:
-                print("Need both arguments")
-                return False
-            return True
-        elif num == 1:
-            if args.add_arg1 == None:
-                print("Need arg 1")
-                return False
-            elif args.add_arg2 != None:
-                print("Don't need arg 2")
-                return False
-            return True
-        elif num == 0:
-            if args.add_arg1 != None:
-                print("Do not need any other argument")
-                return False
-            return True
+##    def __check_args__(self,args,num):
+##        if args.filename == None:
+##            print("Need filename")
+##            return False
+##        if num == 2:
+##            if args.add_arg1 == None or args.add_arg2 == None:
+##                print("Need both arguments")
+##                return False
+##            return True
+##        elif num == 1:
+##            if args.add_arg1 == None:
+##                print("Need arg 1")
+##                return False
+##            elif args.add_arg2 != None:
+##                print("Don't need arg 2")
+##                return False
+##            return True
+##        elif num == 0:
+##            if args.add_arg1 != None:
+##                print("Do not need any other argument")
+##                return False
+##            return True
 
 
 
@@ -601,13 +622,20 @@ class Client:
     it will not be used for this project.
     '''
     def __process_args__(self,args):
-        if args.Semantics == None:
-            print("You need to specify the invocation semantics.")
-            print("Type '--help' for help")
-        elif args.Semantics == "alo":
-            self.__alo__()
+        if args.Semantics == "alo":
+            self.semantics_ = "alo"
+            self.__start__()
         elif args.Semantics == "amo":
-            self.__amo__()
+            self.semantics_ = "amo"
+            self.__start__()
+        else:
+            if args.Semantics == None:
+                print("You need to specify the invocation semantics.")
+                print("Type '--help' for help")
+            else:
+                print("Invalid invocation semantics")
+                print("Please type either At-Most-Once or At-Least-Once ('amo'/'alo')")
+
 
 
 
@@ -619,8 +647,81 @@ class Client:
     Since the client is in a while loop,
     it will continuously ask user for inputs.
     '''
-    def __alo__(self):
+##    def __alo__(self):
+##        print('\n' + '\033[1m' + "================== Welcome to the Client Side ==================" + '\033[0m')
+##        print("\nThe client will be able to send request to: ")
+##        print("Server: " + '\033[1m' + self.host_ + '\033[0m' + "\t Port: " + '\033[1m' + str(self.port_) + '\033[0m' + "\n")
+##        print("The following are the available request from client to server: \n")
+##        self.__help__()
+##        while True:
+##            self.status_ = 0
+##            self.request_ = input("\nEnter your request: ")
+##            if self.request_ not in SERV_OP:
+##                if self.request_ not in CLI_OP:
+##                    print("\nNo Such Operation.\nPlease Enter Again.")
+##                    continue
+##                else:
+##                    eval("self.__" + CLI_OP[self.request_] + "__")()
+##                    print(STATUS[self.status_])
+##            else:
+##                self.inputs_ = self.__get_inputs__()
+##                eval("self.__" + SERV_OP[self.request_] + "__")()
+##                if self.semantics_ == "alo":
+##                    while self.status_ == 2:
+##                        print(STATUS[self.status_])
+##                        print("\nRequesting Again...")
+##                        eval("self.__" + SERV_OP[self.request_] + "__")()
+##                print(STATUS[self.status_])
+    '''
+    This function starts the client.
+    Since the client is in a while loop,
+    it will continuously ask user for inputs.
+    '''
+##    def __amo__(self):
+##        print('\n' + '\033[1m' + "================== Welcome to the Client Side ==================" + '\033[0m')
+##        print("\nThe client will be able to send request to: ")
+##        print("Server: " + '\033[1m' + self.host_ + '\033[0m' + "\t Port: " + '\033[1m' + str(self.port_) + '\033[0m' + "\n")
+##        print("The following are the available request from client to server: \n")
+##        self.__help__()
+##        while True:
+##            self.status_ = 0
+##            self.request_ = input("\nEnter your request: ")
+##            if self.request_ not in SERV_OP:
+##                if self.request_ not in CLI_OP:
+##                    print("\nNo Such Operation.\nPlease Enter Again.")
+##                    continue
+##                else:
+##                    eval("self.__" + CLI_OP[self.request_] + "__")()
+##                    print(STATUS[self.status_])
+##            else:
+##                self.inputs_ = self.__get_inputs__()
+##                eval("self.__" + SERV_OP[self.request_] + "__")()
+##                print(STATUS[self.status_])
+       
+##    def __start__(self):
+##        print('\n' + '\033[1m' + "================== Welcome to the Client Side ==================" + '\033[0m')
+##        print("\nThis program provides the tool for the user to access the local server directory\n\n")
+##        self.host_ = input("Enter the address of the host: ")
+##        self.port_ = self.__check_int_input__("Enter the port number of the host: ")
+##        self.server_ = (self.host_,self.port_)
+##        print("\nThe client will be able to send request to: ")
+##        print("Server: " + '\033[1m' + self.host_ + '\033[0m' + "\t Port: " + '\033[1m' + str(self.port_) + '\033[0m' + "\n")
+##        self.semantics_ = input("Enter the invocation semantics ('amo' (At-Most-Once) / 'alo' (At-Least-One): ")
+##        while self.semantics_ not in ['amo','alo']:
+##            print("Invalid input.\nPlease type either 'amo' or 'alo'...")
+##            self.semantics_ = input("Enter the invocation semantics ('amo' (At-Most-Once) / 'alo' (At-Least-One): ")
+##        print("\nThe following are the available request from client to server: \n")
+##        self.__help__()
+##        eval("self.__" + self.semantics_ + "__")()
+            
+
+
+            
+    def __start__(self):
         print('\n' + '\033[1m' + "================== Welcome to the Client Side ==================" + '\033[0m')
+        print("\nThis program provides the tool for the user to access the local server directory\n\n")
+        self.port_ = self.__check_int_input__("Enter the port number of the host ('q' to quit): ")
+        self.server_ = (self.host_, self.port_)
         print("\nThe client will be able to send request to: ")
         print("Server: " + '\033[1m' + self.host_ + '\033[0m' + "\t Port: " + '\033[1m' + str(self.port_) + '\033[0m' + "\n")
         print("The following are the available request from client to server: \n")
@@ -638,46 +739,13 @@ class Client:
             else:
                 self.inputs_ = self.__get_inputs__()
                 eval("self.__" + SERV_OP[self.request_] + "__")()
-                while self.status_ == 2:
-                    print(STATUS[self.status_])
-                    print("\nRequesting Again...")
-                    eval("self.__" + SERV_OP[self.request_] + "__")()
-                    
+                if self.semantics_ == "alo":
+                    while self.status_ == 2:
+                        print(STATUS[self.status_])
+                        print("\nRequesting Again...")
+                        eval("self.__" + SERV_OP[self.request_] + "__")()
                 print(STATUS[self.status_])
 
-
-
-
-
-    '''
-    This function starts the client.
-    Since the client is in a while loop,
-    it will continuously ask user for inputs.
-    '''
-    def __amo__(self):
-        print('\n' + '\033[1m' + "================== Welcome to the Client Side ==================" + '\033[0m')
-        print("\nThe client will be able to send request to: ")
-        print("Server: " + '\033[1m' + self.host_ + '\033[0m' + "\t Port: " + '\033[1m' + str(self.port_) + '\033[0m' + "\n")
-        print("The following are the available request from client to server: \n")
-        self.__help__()
-        while True:
-            self.status_ = 0
-            self.request_ = input("\nEnter your request: ")
-            if self.request_ not in SERV_OP:
-                if self.request_ not in CLI_OP:
-                    print("\nNo Such Operation.\nPlease Enter Again.")
-                    continue
-                else:
-                    eval("self.__" + CLI_OP[self.request_] + "__")()
-                    print(STATUS[self.status_])
-            else:
-                self.inputs_ = self.__get_inputs__()
-                eval("self.__" + SERV_OP[self.request_] + "__")()
-                print(STATUS[self.status_])
-
-
-
-                
 
 
 
@@ -688,34 +756,15 @@ Before running, please specify:
     3. Cache_Directory
 '''    
 if __name__ == "__main__":
-    server_name = 'DESKTOP-0J4QGEB'
-    port = 9999
+##    server_name = 'DESKTOP-0J4QGEB'
+##    server_name = '192.168.0.103'
+    server_name = 'e-csy'
     
-    client = Client(server_name,port)
+    client = Client(server_name)
 
     args = client.__get_args__()
     client.__process_args__(args)
+
     
-##    client.__amo__()
-##    client.__alo__()
 
   
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

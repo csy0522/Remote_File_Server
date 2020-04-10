@@ -30,6 +30,8 @@ This function decodes the messages
 shared by the server and the clients.
 '''
 def __unmarshall__(b,d_t=str):
+    if b == None:
+        return b
     hex_list = b.hex()
     char_list = []
     for i in range(int(len(hex_list)/2)):
@@ -43,6 +45,8 @@ def __unmarshall__(b,d_t=str):
     elif d_t == bool:
         return bool(''.join(char_list))
     return ''.join(char_list)
+
+
 
 '''
 This function converts integer to hexadecimal.

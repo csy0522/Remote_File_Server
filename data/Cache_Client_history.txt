@@ -88,3 +88,8 @@ Client: 127.0.1.1	Request: READ"hello.txt"	Succeed	2020-04-08 19:07:00
 Client: 127.0.1.1	Request: READ"hello.txt"	Succeed	2020-04-08 19:07:16
 Client: 127.0.1.1	Request: READ"text.txt"	Succeed	2020-04-08 19:07:40
 Client: 127.0.1.1	Request: WRITE"text.txt"	Succeed	2020-04-08 19:07:47
+Client: 127.0.1.1	Request: WRITE"hello.txt"	Succeed	2020-04-10 12:32:40
+Client: 127.0.1.1	Request: WRITE"hello.txt"	Succeed	2020-04-10 17:13:18
+Client: 127.0.1.1	Request: READ"hello.txt"	Succeed	2020-04-10 17:13:35
+Client: 127.0.1.1	Request: READ"hello.txt"	Succeed	2020-04-10 17:43:04
+Client: 127.0.1.1	Request: ERASE"hello.txt"	Succeed	2020-04-10 17:43:30

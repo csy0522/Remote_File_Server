@@ -276,3 +276,29 @@ File: hello.txt	Deleted	2020-04-08 19:07:33
 File: text.txt	Modified from Write Operation	2020-04-08 19:07:46
 File: hello.txt	Created	2020-04-10 09:44:42
 File: hello.txt	Created	2020-04-10 09:46:13
+File: halo.txt	Created	2020-04-10 10:15:24
+File: text.txt	Created	2020-04-10 10:15:32
+File: hello.txt	Created	2020-04-10 10:15:37
+File: halo.txt	Deleted	2020-04-10 10:16:24
+File: text.txt	Deleted	2020-04-10 10:16:32
+File: hello.txt	Deleted	2020-04-10 10:16:37
+File: hello.txt	Created	2020-04-10 10:45:34
+File: hello.txt	Created	2020-04-10 10:53:46
+File: hello.txt	Created	2020-04-10 11:25:15
+File: hello.txt	Created	2020-04-10 11:34:01
+File: hello.txt	Created	2020-04-10 12:30:39
+File: hello.txt	Created	2020-04-10 12:32:33
+File: hello.txt	Modified from Write Operation	2020-04-10 12:32:40
+File: hello.txt	Created	2020-04-10 13:19:31
+File: hello.txt	Created	2020-04-10 17:12:47
+File: hello.txt	Modified from Write Operation	2020-04-10 17:13:18
+File: hello.txt	Deleted	2020-04-10 17:13:47
+File: hello.txt	Created	2020-04-10 17:42:58
+File: hello.txt	Modified from Erase Operation	2020-04-10 17:43:29
+File: hello.txt	Created	2020-04-10 18:09:27
+File: hello.txt	Created	2020-04-10 18:10:14
+File: hello.txt	Created	2020-04-10 18:13:04
+File: hello.txt	Created	2020-04-10 18:40:26
+File: hello.txt	Created	2020-04-10 18:40:43
+File: hello.txt	Created	2020-04-10 20:02:36
+File: hello.txt	Deleted	2020-04-10 20:03:36
