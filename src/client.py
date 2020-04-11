@@ -12,10 +12,15 @@ import socket
 from client_cache import Client_Cache
 import select
 import argparse
+import threading
+import time
+from datetime import datetime
+from datetime import timedelta
 from mar_unmar_shall import __marshall__ as __mar__
 from mar_unmar_shall import __unmarshall__ as __unmar__
 
 TIMEOUT = 60
+CUR = datetime.now()
 STATUS = {
     1:"-------------------- \033[1;32;40mSUCCEEDED\033[0m --------------------",
     0: "-------------------- \033[1;31;40mFAILED\033[0m --------------------",
@@ -71,15 +76,17 @@ class Client:
     def __init__(self):
         self.host_ = None
         self.port_ = None
-##        self.server_ = (self.host_, self.port_)
+        self.server_ = None
+        self.server_addr_ = None
         self.socket_ = self.__create_socket__()
         self.cache_ = self.__create_cache__()
-        self.server_addr_ = None
         self.inputs_ = []
         self.request_ = ""
         self.semantics_ = ''
         self.one_copy_semantics_ = ""
         self.status_ = 0
+        self.time_thread_ = threading.Thread(target=self.__update_time__,daemon=True)
+        self.time_thread_.start()
         
 
 
@@ -150,7 +157,7 @@ class Client:
             self.__send__(i)
         if self.__receive__(int,False) == 1:
             if self.__receive__(int,False) == 1:
-                self.__monitoring__()
+                self.__monitoring__(self.inputs_[1])
                 self.status_ = 1
             else:
                 self.__receive__()
@@ -163,19 +170,17 @@ class Client:
     This is an assistnant function for MONITOR operation.
     It constantly receives the updates / changes of the file specified.
     '''
-    def __monitoring__(self):
-        self.__receive__()
-        if self.status_ == 2 or self.status_ == None: return
-        while True:
-            if self.__receive__(int,False) == 1:
-                self.__receive__()
-                if self.status_ == 2 or self.status_ == None: return
-                self.__receive__()
-                if self.status_ == 2 or self.status_ == None: return
-            else:
-                self.__receive__()
-                if self.status_ == 2 or self.status_ == None: return
-                break
+    def __monitoring__(self,mon_time):
+        global CUR
+        des = datetime.now() + timedelta(seconds=mon_time)
+        print("\nMonitoring...\n")
+        while CUR < des:
+            timeout = select.select([self.socket_],[],[],int((des-CUR).total_seconds()))
+            if timeout[0]:
+                bufsize,self.server_addr_ = self.socket_.recvfrom(12)
+                msg, self.server_addr_ = self.socket_.recvfrom(__unmar__(bufsize,int))
+                msg = __unmar__(msg,d_type)
+        print("...End of Monitoring.\n")
 
 
 
@@ -203,10 +208,6 @@ class Client:
         if self.status_ == 2 or self.status_ == None: return
         self.status_ = self.__receive__(int,False)
         if self.status_ == 2 or self.status_ == None: return
-
-
-
-
 
 
 
@@ -272,7 +273,6 @@ class Client:
         if answer.lower() in yes:
             self.__send__(content)
             
-
 
 
     '''
@@ -465,6 +465,17 @@ class Client:
             print("file does not exist")
 
 
+    '''
+    This function constantly updates the current time.
+    '''
+    def __update_time__(self):
+        global CUR
+        while True:
+            CUR = datetime.now()
+
+
+
+
         
 
     '''
@@ -626,9 +637,11 @@ class Client:
     def __start__(self):
         print('\n' + '\033[1m' + "================== Welcome to the Client Side ==================" + '\033[0m')
         print("\nThis program provides the tool for the user to access the local server directory\n\n")
-        self.host_ = input("Enter the address of the host ('q' to quit): ")
-        if self.host_.lower() in ['q','quit']:exit()
-        self.port_ = self.__check_int_input__("Enter the port number of the host ('q' to quit): ")
+##        self.host_ = input("Enter the address of the host ('q' to quit): ")
+##        if self.host_.lower() in ['q','quit']:exit()
+##        self.port_ = self.__check_int_input__("Enter the port number of the host ('q' to quit): ")
+        self.host_ = '127.0.1.1'
+        self.port_ = 9090
         self.server_ = (self.host_, self.port_)
         print("\nThe client will be able to send request to: ")
         print("Server: " + '\033[1m' + self.host_ + '\033[0m' + "\t Port: " + '\033[1m' + str(self.port_) + '\033[0m' + "\n")
@@ -667,8 +680,10 @@ if __name__ == "__main__":
     
     client = Client()
 
-    args = client.__get_args__()
-    client.__process_args__(args)
+    client.__start__()
+    
+##    args = client.__get_args__()
+##    client.__process_args__(args)
 
 
 

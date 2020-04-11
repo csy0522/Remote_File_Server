@@ -60,6 +60,8 @@ class Server():
         self.time_thread_ = threading.Thread(target=self.__update_time__,daemon=True)
         self.time_thread_.start()
 
+        self.monitee_ = deque()
+
     
 
 
@@ -125,7 +127,17 @@ class Server():
                 
 ##        if self.status_ == 1:
 ##            self.__one_copy_semantics__(self.req_file_,offset,b2w)
-            
+        if self.status_ == 1:
+            self.__notify_monitee__()
+
+
+    def __notify_monitee__(self):
+        if len(self.monitee_) != 0:
+            for mon in self.monitee_:
+                self.server_msg_ = "File \"%s\" Updated.\n" % (self.req_file_)
+                self.__send__(self.server_msg_)
+                self.server_msg_ = "Updated Content: \n%s" % (self.server_msg_)
+                self.__send__(self.server_msg_)
 
 
             
@@ -142,15 +154,13 @@ class Server():
             self.__send__(1)
             if mon_time < TIMEOUT:
                 self.__send__(1)
-                now = datetime.now()
-                des = now + timedelta(seconds=mon_time)
 
                 ori_file = open(self.serv_dir_+self.req_file_)
                 ori_content = ori_file.read()
                 ori_file.close()
-                
+
                 monitor_thread_ = threading.Thread(target=self.__monitoring__,
-                                                args=(self.req_file_,ori_content,des))
+                                                   args=(self.req_file_,mon_time))
                 monitor_thread_.start()
                 self.status_ = 1
             else:
@@ -166,26 +176,35 @@ class Server():
     This is an assistnant function for MONITOR operation.
     It constantly receives the updates / changes of the file specified.
     '''
-    def __monitoring__(self,filename,ori_content,des):
-        global CUR
-        self.server_msg_ = "\nMonitoring...\n"
-        self.__send__(self.server_msg_)
-        while CUR < des:
-            new_file = open(self.serv_dir_+filename)
-            new_content = new_file.read()
-            if ori_content != new_content:
-                self.__send__(1)
-                self.server_msg_ = "File \"%s\" Updated.\n" % (filename)
-                self.__send__(self.server_msg_)
-                self.server_msg_ = "Updated Content: \n%s" % (new_content)
-                self.__send__(self.server_msg_)
-                ori_content = new_content
-            new_file.close()
-        self.__send__(0)
-        self.server_msg_ = "...End of Monitoring.\n"
-        self.__send__(self.server_msg_)
-            
 
+    def __monitoring__(self,filename,mon_time):
+        global CUR
+        self.monitee_.appendleft(self.client_)
+        des = datetime.now() + timedelta(seconds=mon_time)
+        while CUR < des:
+            continue
+        self.monitee_.remove(self.client_)
+##
+##
+##
+##
+##
+##    
+##    def __monitoring__(self,filename,ori_content,des):
+##        global CUR
+##        while CUR < des:
+##            new_file = open(self.serv_dir_+filename)
+##            new_content = new_file.read()
+##            if ori_content != new_content:
+##                self.__send__(1)
+##                self.server_msg_ = "File \"%s\" Updated.\n" % (filename)
+##                self.__send__(self.server_msg_)
+##                self.server_msg_ = "Updated Content: \n%s" % (new_content)
+##                self.__send__(self.server_msg_)
+##                ori_content = new_content
+##            new_file.close()
+##        self.__send__(0)
+            
 
         
     '''
@@ -423,7 +442,6 @@ class Server():
                     self.socket_.sendto(__mar__(msg),cli)
  
     
-    
     '''
     This function sends msg to client.
     '''
@@ -589,7 +607,6 @@ class Server():
     it will continuously receive request from any clients.
     '''
     def __start__(self):
-        global CUR
         while True:
             self.status_ = 0
             print("\nWaiting to receive message...\n")
@@ -598,9 +615,10 @@ class Server():
             self.__record_client__(self.client_[0])
             self.__append_client__(self.client_)
             print("Client \"%s\" requested to:" % (self.client_[0]))
-            req = threading.Thread(
-                eval("self.__" + self.client_req_ + "__")())
-            req.start()
+##            req = threading.Thread(
+##                eval("self.__" + self.client_req_ + "__")())
+##            req.start()
+            eval("self.__" + self.client_req_ + "__")()
 
             self.server_msg_ = ("-------------------- %s --------------------" % (
                 STATUS[self.status_]))
