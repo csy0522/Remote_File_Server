@@ -44,10 +44,9 @@ Detailed explanations will be written on top of each functions.
 '''
 class Server():
     
-    def __init__(self,host,serv_dir):
-        self.host_ = host
-        self.port_ = None
+    def __init__(self,serv_dir):
         self.serv_dir_ = serv_dir
+        self.port_ = None
         self.socket_ = None
         self.history_ = self.__create_file__(DATA_DIR,HIST_FILE)
         self.client_file_ = self.__create_file__(DATA_DIR,CLIENT_FILE)
@@ -59,8 +58,6 @@ class Server():
         self.status_ = 0
         self.time_thread_ = threading.Thread(target=self.__update_time__,daemon=True)
         self.time_thread_.start()
-
-        self.monitee_ = deque()
 
     
 
@@ -127,17 +124,6 @@ class Server():
                 
 ##        if self.status_ == 1:
 ##            self.__one_copy_semantics__(self.req_file_,offset,b2w)
-        if self.status_ == 1:
-            self.__notify_monitee__()
-
-
-    def __notify_monitee__(self):
-        if len(self.monitee_) != 0:
-            for mon in self.monitee_:
-                self.server_msg_ = "File \"%s\" Updated.\n" % (self.req_file_)
-                self.__send__(self.server_msg_)
-                self.server_msg_ = "Updated Content: \n%s" % (self.server_msg_)
-                self.__send__(self.server_msg_)
 
 
             
@@ -155,12 +141,14 @@ class Server():
             if mon_time < TIMEOUT:
                 self.__send__(1)
 
+                self.__send__(self.serv_dir_)
+                
                 ori_file = open(self.serv_dir_+self.req_file_)
                 ori_content = ori_file.read()
                 ori_file.close()
 
                 monitor_thread_ = threading.Thread(target=self.__monitoring__,
-                                                   args=(self.req_file_,mon_time))
+                                                   args=(ori_file,ori_content,mon_time))
                 monitor_thread_.start()
                 self.status_ = 1
             else:
@@ -170,41 +158,28 @@ class Server():
         else:
             self.__send__(0)
             self.__send__(self.server_msg_)
+
+
         
 
     '''
     This is an assistnant function for MONITOR operation.
     It constantly receives the updates / changes of the file specified.
     '''
-
-    def __monitoring__(self,filename,mon_time):
+    def __monitoring__(self,mon_file,ori_content,mon_time):
         global CUR
-        self.monitee_.appendleft(self.client_)
         des = datetime.now() + timedelta(seconds=mon_time)
         while CUR < des:
-            continue
-        self.monitee_.remove(self.client_)
-##
-##
-##
-##
-##
-##    
-##    def __monitoring__(self,filename,ori_content,des):
-##        global CUR
-##        while CUR < des:
-##            new_file = open(self.serv_dir_+filename)
-##            new_content = new_file.read()
-##            if ori_content != new_content:
-##                self.__send__(1)
-##                self.server_msg_ = "File \"%s\" Updated.\n" % (filename)
-##                self.__send__(self.server_msg_)
-##                self.server_msg_ = "Updated Content: \n%s" % (new_content)
-##                self.__send__(self.server_msg_)
-##                ori_content = new_content
-##            new_file.close()
-##        self.__send__(0)
-            
+            try:
+                new_file = open(self.serv_dir_+self.req_file_)
+                new_content = new_file.read()
+            except FileNotFoundError:
+                break
+            if ori_content != new_content:
+                ori_content = new_content
+            new_file.close()
+            mon_file.close()
+
 
         
     '''
@@ -485,14 +460,17 @@ class Server():
     This function creates a new socket for the server
     and binds the host with a port specified from one of the arguments.
     '''
-    def __create_socket__(self, host, port):
+    def __create_socket__(self,port):
         print("Creating UDP socket...")
         sock = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-        print("Connecting socket to...\n - host: {} \n - port {}".format(host,port))
-        sock.bind((host, port))
+        print("Connecting socket to...\n - host: {} \n - Ip: {} \n - port".format(
+            socket.gethostname(),socket.gethostbyname(socket.gethostname()),port))
+        sock.bind((socket.gethostname(), port))
         print("Socket created")
         return sock
-    
+
+
+
     
     '''
     This function creates file in the directory specified.
@@ -563,6 +541,8 @@ class Server():
             self.clients_.appendleft(client)
         except ValueError:
             self.clients_.appendleft(client)
+
+
 
     '''
     This function records a history of operations
@@ -656,7 +636,7 @@ class Server():
             try:
                 args.port = int(args.port)
                 self.port_ = args.port
-                self.socket_ = self.__create_socket__(self.host_, self.port_)
+                self.socket_ = self.__create_socket__(self.port_)
                 self.__start__()
             except ValueError:
                 print("The value must be integer!")
@@ -684,7 +664,7 @@ if __name__ == "__main__":
     '''Server Directory in Windows Machine'''
 ##    server_directory = r"C:\Users\CSY\Desktop\Spring 2020\git\Remote_File_Server\Server_Directory\\"
 
-    server = Server(hostname,server_directory)
+    server = Server(server_directory)
 
     args = server.__get_args__()
     server.__process_args__(args)

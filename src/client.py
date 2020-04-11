@@ -65,6 +65,9 @@ FUNC_INPUT = {
     }
 
 
+SD = "/home/csy/Documents/git/Remote_File_Server/Server_Directory/"
+
+
 '''
 This class creates a client for the user to gain the access of the local server directory
 specified with the hostname and the port number later in the main functino.
@@ -157,7 +160,14 @@ class Client:
             self.__send__(i)
         if self.__receive__(int,False) == 1:
             if self.__receive__(int,False) == 1:
-                self.__monitoring__(self.inputs_[1])
+
+                serv_dir = self.__receive__(p=False)
+                
+                ori_file = open(serv_dir+self.inputs_[0])
+                ori_content = ori_file.read()
+                ori_file.close()
+
+                self.__monitoring__(serv_dir,self.inputs_[0],self.inputs_[1],ori_content)
                 self.status_ = 1
             else:
                 self.__receive__()
@@ -166,22 +176,33 @@ class Client:
             self.__receive__()
             if self.status_ == 2 or self.status_ == None: return
 
+
+
+
     '''
     This is an assistnant function for MONITOR operation.
     It constantly receives the updates / changes of the file specified.
     '''
-    def __monitoring__(self,mon_time):
+    def __monitoring__(self,serv_dir,filename,mon_time,ori_content):
         global CUR
         des = datetime.now() + timedelta(seconds=mon_time)
         print("\nMonitoring...\n")
         while CUR < des:
-            timeout = select.select([self.socket_],[],[],int((des-CUR).total_seconds()))
-            if timeout[0]:
-                bufsize,self.server_addr_ = self.socket_.recvfrom(12)
-                msg, self.server_addr_ = self.socket_.recvfrom(__unmar__(bufsize,int))
-                msg = __unmar__(msg,d_type)
+            try:
+                new_file = open(serv_dir+filename)
+                new_content = new_file.read()
+            except FileNotFoundError:
+                print("\nFile \"%s\" is removed...\n" % (filename))
+                break
+            time.sleep(0.1)
+            if ori_content != new_content:
+                print("==================================")
+                print("File \"%s\" Updated.\n" % (filename))
+                print("Updated Content: \n%s" % (new_content))
+                print("==================================")
+                ori_content = new_content
+            new_file.close()
         print("...End of Monitoring.\n")
-
 
 
 
@@ -267,7 +288,7 @@ class Client:
     '''
     def __overwrite__(self,content):
         yes = ["","y","yes"]
-        answer = input(self.__receive__())
+        answer = input(self.__receive__(p=False))
         if self.status_ == 2 or self.status_ == None: return        
         self.__send__(answer)
         if answer.lower() in yes:
@@ -641,6 +662,7 @@ class Client:
 ##        if self.host_.lower() in ['q','quit']:exit()
 ##        self.port_ = self.__check_int_input__("Enter the port number of the host ('q' to quit): ")
         self.host_ = '127.0.1.1'
+##        self.host_ = '192.168.0.103'
         self.port_ = 9090
         self.server_ = (self.host_, self.port_)
         print("\nThe client will be able to send request to: ")
