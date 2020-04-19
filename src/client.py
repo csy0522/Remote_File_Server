@@ -20,7 +20,6 @@ from mar_unmar_shall import __marshall__ as __mar__
 from mar_unmar_shall import __unmarshall__ as __unmar__
 
 TIMEOUT = 60
-CUR = datetime.now()
 STATUS = {
     1:"-------------------- \033[1;32;40mSUCCEEDED\033[0m --------------------",
     0: "-------------------- \033[1;31;40mFAILED\033[0m --------------------",
@@ -88,9 +87,22 @@ class Client:
         self.semantics_ = ''
         self.one_copy_semantics_ = ""
         self.status_ = 0
-        self.time_thread_ = threading.Thread(target=self.__update_time__,daemon=True)
-        self.time_thread_.start()
-        
+
+
+
+    '''
+    This function updates the file that exists
+    in cache of all the clients.
+    It is executed when one file is updated through any client.
+    '''
+    def __one_copy_semantics__(self):
+        if self.cache_.__data_exist__(pathname,offset) == True:
+            self.__from_cache__(pathname,self.client_req_)
+            self.cache_.__WRITE__(pathname,offset,b2w)
+            self.status_ = 1
+        else:
+            print("file does not exist")
+            
 
 
     '''
@@ -119,6 +131,7 @@ class Client:
                 self.cache_.__add__(
                     self.inputs_[0],response,
                     self.inputs_[1],self.inputs_[1]+len(response))
+                self.cache_.server_dir_ = self.__receive__(p=False)
             
 
 
@@ -131,13 +144,6 @@ class Client:
     and request an update to the server.
     '''
     def __WRITE__(self):
-        if self.cache_.__data_exist__(
-            self.inputs_[0],self.inputs_[1]) == True:
-            self.__from_cache__(
-                self.inputs_[0],SERV_OP[self.request_])
-            self.cache_.__WRITE__(
-                self.inputs_[0],self.inputs_[1],self.inputs_[2])
-        
         self.__send__(SERV_OP[self.request_])
         for i in self.inputs_:
             self.__send__(i)
@@ -146,6 +152,7 @@ class Client:
         if self.status_ == 2 or self.status_ == None: return
         self.status_ = self.__receive__(int,False)
         if self.status_ == 2 or self.status_ == None: return
+
 
 
 
@@ -178,16 +185,14 @@ class Client:
 
 
 
-
     '''
     This is an assistnant function for MONITOR operation.
     It constantly receives the updates / changes of the file specified.
     '''
     def __monitoring__(self,serv_dir,filename,mon_time,ori_content):
-        global CUR
         des = datetime.now() + timedelta(seconds=mon_time)
         print("\nMonitoring...\n")
-        while CUR < des:
+        while self.cache_.__get_current_time__() < des:
             try:
                 new_file = open(serv_dir+filename)
                 new_content = new_file.read()
@@ -215,12 +220,6 @@ class Client:
     and request an update to the server.
     '''
     def __RENAME__(self):
-        if self.cache_.__data_exist__(self.inputs_[0]) == True:
-            self.__from_cache__(
-                self.inputs_[0],SERV_OP[self.request_])
-            self.cache_.__RENAME__(
-                self.inputs_[0],self.inputs_[1])
-
         self.__send__(SERV_OP[self.request_])
         for i in self.inputs_:
             self.__send__(i)
@@ -229,8 +228,10 @@ class Client:
         if self.status_ == 2 or self.status_ == None: return
         self.status_ = self.__receive__(int,False)
         if self.status_ == 2 or self.status_ == None: return
-
-
+        if self.status_ == 1:
+            self.cache_.rename_ = self.__receive__(p=False)
+            if self.status_ == 2 or self.status_ == None: return
+    
 
 
     '''
@@ -241,13 +242,6 @@ class Client:
     and request and update to the server.
     '''
     def __REPLACE__(self):
-        if self.cache_.__data_exist__(
-            self.inputs_[0],self.inputs_[1]) == True:
-            self.__from_cache__(
-                self.inputs_[0],SERV_OP[self.request_])
-            self.cache_.__REPLACE__(
-                self.inputs_[0],self.inputs_[1],self.inputs_[2])
-            
         self.__send__(SERV_OP[self.request_])
         for i in self.inputs_:
             self.__send__(i)
@@ -256,6 +250,7 @@ class Client:
         if self.status_ == 2 or self.status_ == None: return
         self.status_ = self.__receive__(int,False)
         if self.status_ == 2 or self.status_ == None: return
+
 
 
 
@@ -304,13 +299,6 @@ class Client:
     and request an update to the server.
     '''
     def __ERASE__(self):
-        if self.cache_.__data_exist__(
-            self.inputs_[0],self.inputs_[1]) == True:
-            self.__from_cache__(
-                self.inputs_[0],SERV_OP[self.request_])
-            self.cache_.__ERASE__(
-                self.inputs_[0],self.inputs_[1],self.inputs_[2])
-
         self.__send__(SERV_OP[self.request_])
         for i in self.inputs_:
             self.__send__(i)
@@ -358,7 +346,7 @@ class Client:
         self.__send__(SERV_OP[self.request_])
         print("\n" + 
                 "======================= " + 
-                '\033[1m' + "GOOD BYE" + '\033[0m' + 
+                '\033[1m' + "GOODBYE" + '\033[0m' + 
                 " =======================" + 
                 "\n")
         self.status_ = self.__receive__(int,False)
@@ -465,37 +453,6 @@ class Client:
         c2 = "%s \"%s\" from Cache..." % (
             command,filename)
         print('\n' + c1 + '\n' + c2 + '\n')
-
-
-
-    '''
-    This function updates the file that exists
-    in cache of all the clients.
-    It is executed when one file is updated through any client.
-    '''
-    def __one_copy_semantics__(self):        
-        pathname = self.__receive__()
-        offset = self.__receive__(int)
-        b2w = self.__receive__()
-        
-        if self.cache_.__data_exist__(pathname,offset) == True:
-            self.__from_cache__(pathname,self.client_req_)
-            self.cache_.__WRITE__(pathname,offset,b2w)
-            self.status_ = 1
-        else:
-            print("file does not exist")
-
-
-    '''
-    This function constantly updates the current time.
-    '''
-    def __update_time__(self):
-        global CUR
-        while True:
-            CUR = datetime.now()
-
-
-
 
         
 
@@ -616,10 +573,6 @@ class Client:
 
 
 
-    
-
-
-
 
     '''
     This function processes arguments.
@@ -627,24 +580,23 @@ class Client:
     it will not be used for this project.
     '''
     def __process_args__(self,args):
-        if args.Semantics == "alo":
-            self.semantics_ = "alo"
-            self.__start__()
-        elif args.Semantics == "amo":
-            self.semantics_ = "amo"
-            self.__start__()
-        else:
+##        if args.Semantics == "alo":
+##            self.semantics_ = "alo"
+##            self.__start__()
+##        elif args.Semantics == "amo":
+##            self.semantics_ = "amo"
+##            self.__start__()
+        semantics = ['alo','amo']
+        if args.Semantics not in semantics:
             if args.Semantics == None:
                 print("You need to specify the invocation semantics.")
                 print("Type '--help' for help")
             else:
                 print("Invalid invocation semantics")
                 print("Please type either At-Most-Once or At-Least-Once ('amo'/'alo')")
-
-
-
-
-
+        else:
+            self.semantics_ = args.Semantics
+            self.__start__()
 
 
     
@@ -658,12 +610,12 @@ class Client:
     def __start__(self):
         print('\n' + '\033[1m' + "================== Welcome to the Client Side ==================" + '\033[0m')
         print("\nThis program provides the tool for the user to access the local server directory\n\n")
-##        self.host_ = input("Enter the address of the host ('q' to quit): ")
-##        if self.host_.lower() in ['q','quit']:exit()
-##        self.port_ = self.__check_int_input__("Enter the port number of the host ('q' to quit): ")
-        self.host_ = '127.0.1.1'
+        self.host_ = input("Enter the address of the host ('q' to quit): ")
+        if self.host_.lower() in ['q','quit']:exit()
+        self.port_ = self.__check_int_input__("Enter the port number of the host ('q' to quit): ")
 ##        self.host_ = '192.168.0.103'
-        self.port_ = 9090
+##        self.host_ = '192.168.0.104'
+##        self.port_ = 9090
         self.server_ = (self.host_, self.port_)
         print("\nThe client will be able to send request to: ")
         print("Server: " + '\033[1m' + self.host_ + '\033[0m' + "\t Port: " + '\033[1m' + str(self.port_) + '\033[0m' + "\n")
@@ -682,11 +634,13 @@ class Client:
             else:
                 self.inputs_ = self.__get_inputs__()
                 eval("self.__" + SERV_OP[self.request_] + "__")()
+                self.cache_.client_req_ = SERV_OP[self.request_]
                 if self.semantics_ == "alo":
                     while self.status_ == 2:
                         print(STATUS[self.status_])
                         print("\nRequesting Again...")
                         eval("self.__" + SERV_OP[self.request_] + "__")()
+                time.sleep(0.1)
                 print(STATUS[self.status_])
 
 
@@ -701,77 +655,9 @@ Before running, please specify:
 if __name__ == "__main__":
     
     client = Client()
-
-    client.__start__()
     
-##    args = client.__get_args__()
-##    client.__process_args__(args)
-
-
-
-
- 
-       
-##    def __start__(self):
-##        print('\n' + '\033[1m' + "================== Welcome to the Client Side ==================" + '\033[0m')
-##        print("\nThis program provides the tool for the user to access the local server directory\n\n")
-##        self.host_ = input("Enter the address of the host: ")
-##        self.port_ = self.__check_int_input__("Enter the port number of the host: ")
-##        self.server_ = (self.host_,self.port_)
-##        print("\nThe client will be able to send request to: ")
-##        print("Server: " + '\033[1m' + self.host_ + '\033[0m' + "\t Port: " + '\033[1m' + str(self.port_) + '\033[0m' + "\n")
-##        self.semantics_ = input("Enter the invocation semantics ('amo' (At-Most-Once) / 'alo' (At-Least-One): ")
-##        while self.semantics_ not in ['amo','alo']:
-##            print("Invalid input.\nPlease type either 'amo' or 'alo'...")
-##            self.semantics_ = input("Enter the invocation semantics ('amo' (At-Most-Once) / 'alo' (At-Least-One): ")
-##        print("\nThe following are the available request from client to server: \n")
-##        self.__help__()
-##        eval("self.__" + self.semantics_ + "__")()
-
-
-    '''
-    This function checks arguments.
-    Since this was designed for a back-up plan,
-    it will not be used for this project.
-    '''
-##    def __check_args__(self,args,num):
-##        if args.filename == None:
-##            print("Need filename")
-##            return False
-##        if num == 2:
-##            if args.add_arg1 == None or args.add_arg2 == None:
-##                print("Need both arguments")
-##                return False
-##            return True
-##        elif num == 1:
-##            if args.add_arg1 == None:
-##                print("Need arg 1")
-##                return False
-##            elif args.add_arg2 != None:
-##                print("Don't need arg 2")
-##                return False
-##            return True
-##        elif num == 0:
-##            if args.add_arg1 != None:
-##                print("Do not need any other argument")
-##                return False
-##            return True
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    args = client.__get_args__()
+    client.__process_args__(args)
 
     
 

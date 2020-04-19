@@ -81,13 +81,14 @@ class Server():
                     self.server_msg_ = "Your length of \"bytes to read\" exceeded the length of file content.\n"
                 else:
                     if b2r == -1:
-                        b2r = len(content) - offset
+                        b2r = len(content)
                     self.server_msg_ = content[offset:offset + b2r]
                     self.status_ = 1
                 f.close()
                 
         self.__send__(self.server_msg_)
         self.__send__(self.status_)
+        if self.status_ == 1: self.__send__(self.serv_dir_)
 
 
 
@@ -122,8 +123,6 @@ class Server():
         self.__send__(self.server_msg_)
         self.__send__(self.status_)
                 
-##        if self.status_ == 1:
-##            self.__one_copy_semantics__(self.req_file_,offset,b2w)
 
 
             
@@ -181,6 +180,7 @@ class Server():
             mon_file.close()
 
 
+
         
     '''
     This operation allows the clients to rename
@@ -203,9 +203,10 @@ class Server():
                 
         self.__send__(self.server_msg_)
         self.__send__(self.status_)
+        if self.status_ == 1:
+            self.__send__(new_name)
         
-##        if self.status_ == 1:
-##            self.__one_copy_semantics__(self.req_file_,new_name)
+
 
             
         
@@ -237,9 +238,7 @@ class Server():
                 
         self.__send__(self.server_msg_)
         self.__send__(self.status_)
-        
-##        if self.status_ == 1:
-##            self.__one_copy_semantics__(self.req_file_,offset,b2w)
+
 
 
         
@@ -338,8 +337,6 @@ class Server():
         self.__send__(self.server_msg_)
         self.__send__(self.status_)
             
-##        if self.status_ == 1:
-##            self.__one_copy_semantics__(self.req_file_,offset,b2e)
 
         
     
@@ -395,26 +392,6 @@ class Server():
 
 
 
-
-
-    '''
-    This function updates the file that exists
-    in cache of all the clients.
-    It is executed when one file is updated through any client.
-    '''
-    def __one_copy_semantics__(self,filename,arg1,arg2=None):
-        messages = [filename]
-        if arg2 == None:
-            messages.append(arg1)
-        else:
-            messages.append(str(arg1))
-            messages.append(str(arg2))
-        if len(self.clients_) > 1:
-            for cli in list(self.clients_)[1:]:
-                for msg in messages:
-                    bufsize = self.__get_bufsize__(msg)
-                    self.socket_.sendto(__mar__(bufsize),cli)
-                    self.socket_.sendto(__mar__(msg),cli)
  
     
     '''
@@ -463,7 +440,7 @@ class Server():
     def __create_socket__(self,port):
         print("Creating UDP socket...")
         sock = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-        print("Connecting socket to...\n - host: {} \n - Ip: {} \n - port".format(
+        print("Connecting socket to...\n - host: {} \n - Ip: {} \n - port: {}".format(
             socket.gethostname(),socket.gethostbyname(socket.gethostname()),port))
         sock.bind((socket.gethostname(), port))
         print("Socket created")
@@ -569,6 +546,8 @@ class Server():
                 " file \"" + self.req_file_ + "\" " + 
                 succ + "\tTime: " + curr_time + "\n")
         self.history_.close()
+
+
         
         
     '''
@@ -578,6 +557,7 @@ class Server():
         global CUR
         while True:
             CUR = datetime.now()
+            time.sleep(0.1)
 
 
 
@@ -645,8 +625,6 @@ class Server():
                 print("The port is reserved!")
                 print("Please choose a different port number!")
             
-
-
 
 
 '''
