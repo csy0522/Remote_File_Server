@@ -591,12 +591,12 @@ class Client:
     def __start__(self):
         print('\n' + '\033[1m' + "================== Welcome to the Client Side ==================" + '\033[0m')
         print("\nThis program provides the tool for the user to access the local server directory\n\n")
-##        self.host_ = input("Enter the address of the host ('q' to quit): ")
-##        if self.host_.lower() in ['q','quit']:exit()
-##        self.port_ = self.__check_int_input__("Enter the port number of the host ('q' to quit): ")
+        self.host_ = input("Enter the address of the host ('q' to quit): ")
+        if self.host_.lower() in ['q','quit']:exit()
+        self.port_ = self.__check_int_input__("Enter the port number of the host ('q' to quit): ")
 ##        self.host_ = '192.168.0.103'
-        self.host_ = '192.168.0.104'
-        self.port_ = 9090
+##        self.host_ = '192.168.0.104'
+##        self.port_ = 9090
         self.server_ = (self.host_, self.port_)
         print("\nThe client will be able to send request to: ")
         print("Server: " + '\033[1m' + self.host_ + '\033[0m' + "\t Port: " + '\033[1m' + str(self.port_) + '\033[0m' + "\n")
@@ -637,8 +637,6 @@ if __name__ == "__main__":
     
     client = Client()
 
-    
-    
     args = client.__get_args__()
     client.__process_args__(args)
 
