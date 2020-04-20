@@ -41,6 +41,7 @@ SERV_OP = {
     }
 CLI_OP = {
     'cache': "CACHE", 'c': "CACHE",
+    'cachel': "CACHE_LONG", 'cl': "CACHE_LONG",
     'time': "TIME", 't': "TIME",
     'help': "HELP", 'h': "HELP"    
     }
@@ -340,6 +341,10 @@ class Client:
         self.cache_.__LS__()
         self.status_ = 1
 
+    def __CACHE_LONG__(self):
+        self.cache_.__LSL__()
+        self.status_ = 1
+
     def __TIME__(self):
         self.cache_.__get_time__()
         self.status_ = 1
@@ -561,12 +566,6 @@ class Client:
     it will not be used for this project.
     '''
     def __process_args__(self,args):
-##        if args.Semantics == "alo":
-##            self.semantics_ = "alo"
-##            self.__start__()
-##        elif args.Semantics == "amo":
-##            self.semantics_ = "amo"
-##            self.__start__()
         semantics = ['alo','amo']
         if args.Semantics not in semantics:
             if args.Semantics == None:
@@ -580,9 +579,6 @@ class Client:
             self.__start__()
 
 
-    
-            
-
     '''
     This function starts the client.
     Since the client is in a while loop,
@@ -594,9 +590,10 @@ class Client:
         self.host_ = input("Enter the address of the host ('q' to quit): ")
         if self.host_.lower() in ['q','quit']:exit()
         self.port_ = self.__check_int_input__("Enter the port number of the host ('q' to quit): ")
+        self.cache_.time_out_ = self.__check_int_input__("Enter Cache timeout ('q' to quit): ")
 ##        self.host_ = '192.168.0.103'
 ##        self.host_ = '192.168.0.104'
-##        self.port_ = 9090
+##        self.port_ = 9999
         self.server_ = (self.host_, self.port_)
         print("\nThe client will be able to send request to: ")
         print("Server: " + '\033[1m' + self.host_ + '\033[0m' + "\t Port: " + '\033[1m' + str(self.port_) + '\033[0m' + "\n")

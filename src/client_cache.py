@@ -16,7 +16,6 @@ CACHE_CLIENT_FILE = "Cache_Client_History.txt"
 LOG_FILE = "Cache_Log.txt"
 DATA_DIR = "../data/"
 CUR = datetime.now()
-CACHE_TIME = 60
 
 '''
 This class creates a cache for the client.
@@ -31,6 +30,7 @@ class Client_Cache:
         self.history_ = self.__create_file__(DATA_DIR,CACHE_CLIENT_FILE)
         self.logfile_ = self.__create_file__(DATA_DIR,LOG_FILE)
         self.client_ = client
+        self.time_out_ = 20
         self.client_req_ = None
         self.rename_ = None
         self.one_copy_semantics_ = None
@@ -60,13 +60,21 @@ class Client_Cache:
             print("\t%s" % (k))
         print('================= END =================\n')
 
+    def __LSL__(self):
+        print("\nList all files in Cache")
+        print('\n================= CACHE =================')
+        for k,v in self.storage_.items():
+            print("\t%s" % (k))
+            print("\t- %s\n" % (v[1]))
+        print('================= END =================\n')
+
 
 
     '''
     This function adds a data / file into the dictionary cache.
     '''
     def __add__(self,key,content,offset,b2r,last_index):
-        self.storage_[key] = [offset,content,b2r,last_index,CUR+timedelta(seconds=CACHE_TIME)]
+        self.storage_[key] = [offset,content,b2r,last_index,CUR+timedelta(seconds=self.time_out_)]
         self.__update_log__(key,"Created")
 
 
@@ -202,7 +210,6 @@ class Client_Cache:
         global CUR
         self.logfile_ = open(DATA_DIR+LOG_FILE,'a')
         self.logfile_.write("File: " + key + 
-                            # '\tContent: ' + self.storage_[key][1] + 
                             '\t' + what + '\t' + 
                             CUR.strftime("%Y-%m-%d %H:%M:%S")+"\n")
         self.logfile_.close()

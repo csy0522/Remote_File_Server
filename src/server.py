@@ -60,6 +60,11 @@ class Server():
         self.time_thread_ = threading.Thread(target=self.__update_time__,daemon=True)
         self.time_thread_.start()
 
+
+
+    def __C__(self,client):
+        for c in self.clients_:
+            print(c)
     
 
 
@@ -123,6 +128,12 @@ class Server():
                 
         self.__send__(self.server_msg_,client)
         self.__send__(self.status_,client)
+        if self.status_ == 1:
+            for c in self.clients_:
+                if c != client:
+                    self.__send__('WRITE',c)
+                    self.__send__(self.req_file_,c)
+                    self.__send__(self.server_msg_,c)
                 
 
 
@@ -178,6 +189,7 @@ class Server():
             if ori_content != new_content:
                 self.__send__(1,client)
                 self.__send__(new_content,client)
+                time.sleep(0.1)
                 ori_content = new_content
         
         self.__send__(0,client)
@@ -388,7 +400,7 @@ class Server():
     '''
     def __DISAPPEAR__(self,client):
         print("\n\t%s from clients list\n" % (self.client_req_))
-        self.clients_.remove(client[0])
+        self.clients_.remove(client)
         self.status_ = 1
         self.__send__(self.status_,client)
 
@@ -530,7 +542,9 @@ class Server():
     '''
     def __append_client__(self,client):
         try:
-            self.clients_.remove(client)
+            for c in list(self.clients_):
+                if client[0] == c[0]:
+                    self.clients_.remove(c)
             self.clients_.appendleft(client)
         except ValueError:
             self.clients_.appendleft(client)
@@ -591,7 +605,7 @@ class Server():
             except TypeError:
                 continue
             self.__record_client__(client[0])
-            self.__append_client__(client[0])
+            self.__append_client__(client)
             print("Client \"%s\" requested to:" % (client[0]))
 ##            req = threading.Thread(
 ##                eval("self.__" + self.client_req_ + "__")())

@@ -1282,3 +1282,33 @@ File: test.txt	Created	2020-04-19 20:04:55
 File: test.txt	Created	2020-04-19 20:05:13
 File: test.txt	Modified from WRITE Operation	2020-04-19 20:05:13
 File: test.txt	Deleted	2020-04-19 20:06:13
+File: test.txt	Created	2020-04-20 16:29:30
+File: test.txt	Deleted	2020-04-20 16:30:30
+File: test.txt	Created	2020-04-20 16:41:17
+File: test.txt	Created	2020-04-20 16:56:27
+File: test.txt	Modified from WRITE Operation	2020-04-20 16:56:33
+File: test.txt	Created	2020-04-20 16:56:33
+File: test.txt	Created	2020-04-20 16:57:01
+File: test.txt	Modified from WRITE Operation	2020-04-20 16:57:08
+File: test.txt	Created	2020-04-20 16:57:08
+File: test.txt	Deleted	2020-04-20 16:58:08
+File: test.txt	Created	2020-04-20 16:58:18
+File: test.txt	Modified from WRITE Operation	2020-04-20 16:58:30
+File: test.txt	Created	2020-04-20 16:58:30
+File: test.txt	Created	2020-04-20 17:30:22
+File: test.txt	Created	2020-04-20 17:32:11
+File: test.txt	Created	2020-04-20 19:21:21
+File: test.txt	Modified from ERASE Operation	2020-04-20 19:21:28
+File: test.txt	Created	2020-04-20 19:21:28
+File: test.txt	Modified from ERASE Operation	2020-04-20 19:21:39
+File: test.txt	Created	2020-04-20 19:21:39
+File: test.txt	Created	2020-04-20 19:31:53
+File: test.txt	Deleted	2020-04-20 19:32:53
+File: test.txt	Created	2020-04-20 20:07:05
+File: test.txt	Created	2020-04-20 20:09:45
+File: test.txt	Created	2020-04-20 20:11:19
+File: test.txt	Modified from WRITE Operation	2020-04-20 20:11:45
+File: test.txt	Created	2020-04-20 20:11:45
+File: test.txt	Created	2020-04-20 20:12:05
+File: test.txt	Created	2020-04-20 20:57:52
+File: test.txt	Created	2020-04-20 20:58:06
