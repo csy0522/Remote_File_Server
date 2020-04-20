@@ -521,6 +521,10 @@ class Client:
         print('\033[1m' + "cache(c)" + '\033[0m')
         print(" : List all files in Cache")
         print('\n')
+
+        print('\033[1m' + "cachel(cl)" + '\033[0m')
+        print(" : List all files in Cache and their contents")
+        print('\n')
         
         print('\033[1m' + "server(s)" + '\033[0m')
         print(" : List all files in Server Directory")
