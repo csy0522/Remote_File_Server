@@ -14,6 +14,7 @@ import time
 from collections import deque
 import select
 import argparse
+from ipaddress import ip_address
 from mar_unmar_shall import __marshall__ as __mar__
 from mar_unmar_shall import __unmarshall__ as __unmar__
 
@@ -66,7 +67,7 @@ class Server():
     This operation allows the clients to print 
     a file from offset till the number of bytes specified.
     '''
-    def __READ__(self):
+    def __READ__(self,client):
         self.req_file_,offset,b2r = self.__receive__(),self.__receive__(int),self.__receive__(int)
         if self.status_ == 2 or self.status_ == None: return
 
@@ -86,9 +87,9 @@ class Server():
                     self.status_ = 1
                 f.close()
                 
-        self.__send__(self.server_msg_)
-        self.__send__(self.status_)
-        if self.status_ == 1: self.__send__(self.serv_dir_)
+        self.__send__(self.server_msg_,client)
+        self.__send__(self.status_,client)
+        if self.status_ == 1: self.__send__(len(content),client)
 
 
 
@@ -98,7 +99,7 @@ class Server():
     This operation allows the clients to insert 
     a string starting from the offset.
     '''
-    def __WRITE__(self):
+    def __WRITE__(self,client):
         self.req_file_,offset,b2w = self.__receive__(),self.__receive__(int),self.__receive__()
         if self.status_ == 2 or self.status_ == None: return
 
@@ -120,8 +121,8 @@ class Server():
                     self.status_ = 1
                 f.close()
                 
-        self.__send__(self.server_msg_)
-        self.__send__(self.status_)
+        self.__send__(self.server_msg_,client)
+        self.__send__(self.status_,client)
                 
 
 
@@ -130,33 +131,31 @@ class Server():
     This operation allows the clients to "observe" the updates / changes
     made to a specific file during a period of time.
     '''
-    def __MONITOR__(self):
+    def __MONITOR__(self,client):
         self.req_file_,mon_time = self.__receive__(),self.__receive__(int)
         if self.status_ == 2 or self.status_ == None: return
 
         print("\n\t{} \"{}\"\n".format(self.client_req_,self.req_file_))
         if self.__check_server_directory__(self.req_file_):
-            self.__send__(1)
+            self.__send__(1,client)
             if mon_time < TIMEOUT:
-                self.__send__(1)
-
-                self.__send__(self.serv_dir_)
+                self.__send__(1,client)
                 
                 ori_file = open(self.serv_dir_+self.req_file_)
                 ori_content = ori_file.read()
                 ori_file.close()
 
                 monitor_thread_ = threading.Thread(target=self.__monitoring__,
-                                                   args=(ori_file,ori_content,mon_time))
+                                                   args=(ori_content,mon_time,client))
                 monitor_thread_.start()
                 self.status_ = 1
             else:
-                self.__send__(0)
+                self.__send__(0,client)
                 self.__send__("Monitoring time must be smaller than timeout (< %d seconds)" % (
-                    TIMEOUT))
+                    TIMEOUT),client)
         else:
-            self.__send__(0)
-            self.__send__(self.server_msg_)
+            self.__send__(0,client)
+            self.__send__(self.server_msg_,client)
 
 
         
@@ -165,20 +164,23 @@ class Server():
     This is an assistnant function for MONITOR operation.
     It constantly receives the updates / changes of the file specified.
     '''
-    def __monitoring__(self,mon_file,ori_content,mon_time):
+    def __monitoring__(self,ori_content,mon_time,client):
         global CUR
         des = datetime.now() + timedelta(seconds=mon_time)
         while CUR < des:
             try:
                 new_file = open(self.serv_dir_+self.req_file_)
                 new_content = new_file.read()
+                new_file.close()
             except FileNotFoundError:
+                self.__send__(2,client)
                 break
             if ori_content != new_content:
+                self.__send__(1,client)
+                self.__send__(new_content,client)
                 ori_content = new_content
-            new_file.close()
-            mon_file.close()
-
+        
+        self.__send__(0,client)
 
 
         
@@ -186,7 +188,7 @@ class Server():
     This operation allows the clients to rename
     a file specified.
     '''
-    def __RENAME__(self):
+    def __RENAME__(self,client):
         self.req_file_,new_name = self.__receive__(),self.__receive__()
         if self.status_ == 2 or self.status_ == None: return
 
@@ -201,10 +203,10 @@ class Server():
                 self.status_ = 1
                 self.server_msg_ = "\"%s\" -> \"%s\"\n" % (self.req_file_,new_name)
                 
-        self.__send__(self.server_msg_)
-        self.__send__(self.status_)
+        self.__send__(self.server_msg_,client)
+        self.__send__(self.status_,client)
         if self.status_ == 1:
-            self.__send__(new_name)
+            self.__send__(new_name,client)
         
 
 
@@ -214,7 +216,7 @@ class Server():
     This operation allows the clients to replace
     a part of content with another string specified from the offset.
     '''
-    def __REPLACE__(self):
+    def __REPLACE__(self,client):
         self.req_file_,offset,b2w = self.__receive__(),self.__receive__(int),self.__receive__()
         if self.status_ == 2 or self.status_ == None: return
 
@@ -236,8 +238,8 @@ class Server():
                     self.status_ = 1
                 f.close()
                 
-        self.__send__(self.server_msg_)
-        self.__send__(self.status_)
+        self.__send__(self.server_msg_,client)
+        self.__send__(self.status_,client)
 
 
 
@@ -246,14 +248,14 @@ class Server():
     This operation allows the clients to create
     new files in the local server directory.
     '''
-    def __CREATE__(self):
+    def __CREATE__(self,client):
         self.req_file_,content = self.__receive__(),self.__receive__()
         if self.status_ == 2 or self.status_ == None: return
 
         print("\n\t{} \"{}\"\n".format(self.client_req_,self.req_file_))
         
         if not self.__check_server_directory__(self.req_file_):
-            self.__send__(0)
+            self.__send__(0,client)
             file_type_idx = self.req_file_.rfind('.')
             file_type = self.req_file_[file_type_idx:]
             if file_type != ".txt":
@@ -268,11 +270,11 @@ class Server():
                 self.status_ = 1
                 self.server_msg_ = "\nFile \"%s\" Created." % (self.req_file_)
         else:
-            self.__send__(1)
-            self.__overwrite__()
+            self.__send__(1,client)
+            self.__overwrite__(client)
             
-        self.__send__(self.server_msg_)
-        self.__send__(self.status_)
+        self.__send__(self.server_msg_,client)
+        self.__send__(self.status_,client)
 
 
             
@@ -280,10 +282,10 @@ class Server():
     This is an assistnant function for CREATE % Rename operation.
     It asks the clients if it wants to overwrite an existing file.
     '''
-    def __overwrite__(self):
+    def __overwrite__(self,client):
         self.server_msg_ = "The file \"%s\" already exists in the server directory.\n\
     Do you want to overwrite it[Y/n]: " % (self.req_file_)
-        self.__send__(self.server_msg_)
+        self.__send__(self.server_msg_,client)
         
         answer = self.__receive__()
         if self.status_ == 2 or self.status_ == None: return
@@ -309,7 +311,7 @@ class Server():
     This operation allows the clients to erase
     a chunk of string starting from the offset to the number of bytes specified.
     '''
-    def __ERASE__(self):
+    def __ERASE__(self,client):
         self.req_file_,offset,b2e = self.__receive__(),self.__receive__(int),self.__receive__(int)
         if self.status_ == 2 or self.status_ == None: return
         
@@ -334,8 +336,8 @@ class Server():
                     self.status_ = 1
                 f.close()
                 
-        self.__send__(self.server_msg_)
-        self.__send__(self.status_)
+        self.__send__(self.server_msg_,client)
+        self.__send__(self.status_,client)
             
 
         
@@ -344,7 +346,7 @@ class Server():
     This operation allows the clients to remove
     a file from the local server directory.
     '''
-    def __DELETE__(self):
+    def __DELETE__(self,client):
         self.req_file_ = self.__receive__()
         if self.status_ == 2 or self.status_ == None: return
         
@@ -356,15 +358,15 @@ class Server():
             self.server_msg_ = "\nFile \"%s\" removed." % (self.req_file_)
             self.status_ = 1
             
-        self.__send__(self.server_msg_)
-        self.__send__(self.status_)
+        self.__send__(self.server_msg_,client)
+        self.__send__(self.status_,client)
         
 
     '''
     This operation allows the clients to see
     every available files in the local server directory.
     '''
-    def __LS__(self):
+    def __LS__(self,client):
         self.server_msg_ = "List all files on Server Directory"
         print('\n\t' + self.server_msg_ + '\n')
         self.req_file_ = "ALL"
@@ -373,9 +375,9 @@ class Server():
         for c in os.listdir(self.serv_dir_):
             files += '\t'+c+'\n'
         files += END_OF_REQUEST + '\n'
-        self.__send__(files)
+        self.__send__(files,client)
         self.status_ = 1
-        self.__send__(self.status_)
+        self.__send__(self.status_,client)
     
     
     
@@ -384,11 +386,11 @@ class Server():
     themselves from the "clients list",
     and exit the client program.
     '''
-    def __DISAPPEAR__(self):
+    def __DISAPPEAR__(self,client):
         print("\n\t%s from clients list\n" % (self.client_req_))
-        self.clients_.remove(self.client_)
+        self.clients_.remove(client[0])
         self.status_ = 1
-        self.__send__(self.status_)
+        self.__send__(self.status_,client)
 
 
 
@@ -397,12 +399,12 @@ class Server():
     '''
     This function sends msg to client.
     '''
-    def __send__(self,msg):
+    def __send__(self,msg,client):
         if type(msg) != str:
             msg = str(msg)
         bufsize = self.__get_bufsize__(msg)
-        self.socket_.sendto(__mar__(bufsize),self.client_)
-        self.socket_.sendto(__mar__(msg),self.client_)
+        self.socket_.sendto(__mar__(bufsize),client)
+        self.socket_.sendto(__mar__(msg),client)
 
 
     '''
@@ -411,16 +413,30 @@ class Server():
     based on the optimal bufsize.
     if timeout, return a specific value for status update.
     '''
-    def __receive__(self, d_type=str):
+##    def __receive__(self, d_type=str):
+##        timeout = select.select([self.socket_],[],[],TIMEOUT)
+##        if timeout[0]:
+##            bufsize,self.client_ = self.socket_.recvfrom(12)
+##            msg,self.client_ = self.socket_.recvfrom(__unmar__(bufsize,int))
+##            print(self.client_)
+##            msg = __unmar__(msg,d_type)
+##            return msg
+##        else:
+##            self.status_ = 2
+
+
+    def __receive__(self,d=str,c=False):
         timeout = select.select([self.socket_],[],[],TIMEOUT)
         if timeout[0]:
-            bufsize,self.client_ = self.socket_.recvfrom(12)
-            msg,self.client_ = self.socket_.recvfrom(__unmar__(bufsize,int))
-            msg = __unmar__(msg,d_type)
-            return msg
+            bufsize,client = self.socket_.recvfrom(12)
+            message,client = self.socket_.recvfrom(__unmar__(bufsize,int))
+            message = __unmar__(message,d)
+            if c:
+                return message,client
+            return message
         else:
             self.status_ = 2
-
+    
     
     '''
     This function calculates a optimal bufsize for a message
@@ -526,7 +542,7 @@ class Server():
     requested by the clients.
     It is saved in "data" directory.
     '''
-    def __record__(self):
+    def __record__(self,client):
         self.history_ = open(DATA_DIR+HIST_FILE,'a')
         succ = 'Succeeded'
         if self.status_ == 0:
@@ -536,12 +552,12 @@ class Server():
         curr_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         if self.status_ == 2 or self.client_req_ == "DISAPPEAR":
             self.history_.write("Client: " + 
-            self.client_[0] + "\tPort: " +
+            client[0] + "\tPort: " +
             str(self.port_) + "\tRequest: " + self.client_req_ +
             '\t' + succ + "\tTime: " + curr_time + "\n")
         else:
             self.history_.write("Client: " + 
-                self.client_[0] + "\tPort: " +
+                client[0] + "\tPort: " +
                 str(self.port_) + "\tRequest: " + self.client_req_ +
                 " file \"" + self.req_file_ + "\" " + 
                 succ + "\tTime: " + curr_time + "\n")
@@ -570,20 +586,22 @@ class Server():
         while True:
             self.status_ = 0
             print("\nWaiting to receive message...\n")
-            self.client_req_ = self.__receive__()
-            if self.client_req_ == None: continue
-            self.__record_client__(self.client_[0])
-            self.__append_client__(self.client_)
-            print("Client \"%s\" requested to:" % (self.client_[0]))
+            try:
+                self.client_req_,client = self.__receive__(c=True)
+            except TypeError:
+                continue
+            self.__record_client__(client[0])
+            self.__append_client__(client[0])
+            print("Client \"%s\" requested to:" % (client[0]))
 ##            req = threading.Thread(
 ##                eval("self.__" + self.client_req_ + "__")())
 ##            req.start()
-            eval("self.__" + self.client_req_ + "__")()
+            eval("self.__" + self.client_req_ + "__")(client)
 
             self.server_msg_ = ("-------------------- %s --------------------" % (
                 STATUS[self.status_]))
             print(self.server_msg_)
-            self.__record__()
+            self.__record__(client)
 
 
 

@@ -31,9 +31,9 @@ class Client_Cache:
         self.history_ = self.__create_file__(DATA_DIR,CACHE_CLIENT_FILE)
         self.logfile_ = self.__create_file__(DATA_DIR,LOG_FILE)
         self.client_ = client
-        self.server_dir_ = None
         self.client_req_ = None
         self.rename_ = None
+        self.one_copy_semantics_ = None
         self.time_thread_ = threading.Thread(target=self.__update_time__,daemon=True)
         self.time_thread_.start()
         
@@ -42,7 +42,7 @@ class Client_Cache:
     if the file exists in the cache.
     '''
     def __READ__(self,filename,offset,b2r):
-        offset_,content_,last_index_,_ = self.storage_[filename]
+        offset_,content_,b2r_,last_index_,_ = self.storage_[filename]
         if b2r == -1:
             b2r = last_index_
         print(self.storage_[filename][1][offset-offset_:b2r-offset])
@@ -65,8 +65,8 @@ class Client_Cache:
     '''
     This function adds a data / file into the dictionary cache.
     '''
-    def __add__(self,key,content,offset,last_index):
-        self.storage_[key] = [offset,content,last_index,CUR+timedelta(seconds=CACHE_TIME)]
+    def __add__(self,key,content,offset,b2r,last_index):
+        self.storage_[key] = [offset,content,b2r,last_index,CUR+timedelta(seconds=CACHE_TIME)]
         self.__update_log__(key,"Created")
 
 
@@ -87,14 +87,12 @@ class Client_Cache:
         if data in self.storage_:
             if offset == None:
                 return True
-            offset_,content_,last_index_, _ = self.storage_[data]
-            if offset >= offset_ and offset <= last_index_:
+            offset_,content_,b2r_,last_index_,_ = self.storage_[data]
+            if offset >= offset_ and offset <= b2r_:
                 if b2r != None:
                     if b2r == -1:
-                        serv_file = open(self.server_dir_+data)
-                        b2r = len(serv_file.read())
-                        serv_file.close()
-                    if b2r <= last_index_:
+                        b2r = last_index_
+                    if b2r <= b2r_:
                         return True
                     else:
                         return False
@@ -127,6 +125,7 @@ class Client_Cache:
     def __file_exist__(self,directory,filename):
         return os.path.isfile(directory+filename)
             
+
     
     '''
     This function constantly updates the current time.
@@ -144,25 +143,40 @@ class Client_Cache:
     This function updates the content in the client_cache
     through one copy semantics.
     '''
-    def __one_copy_semantics__(self,k,v):
+    def __one_copy_semantics__(self):
         if self.client_req_ in ["WRITE","REPLACE","ERASE","RENAME"]:
+            offset_,ori_content_,b2r_,last_index_,_ = self.storage_[self.one_copy_semantics_[0]]
             if self.client_req_ == "RENAME":
-                print("File %s changed to %s in Cache through One_Copy_Semantics" % (k,self.rename_))
-                self.__del__(k)
-                self.__add__(self.rename_,v[1],v[0],v[2])
+                if self.one_copy_semantics_[0] != self.one_copy_semantics_[1]:
+                    print("File %s changed to %s in Cache through One_Copy_Semantics" % (
+                        self.one_copy_semantics_[0],self.one_copy_semantics_[1]))
+                    self.__del__(self.one_copy_semantics_[0])
+                    self.__add__(self.one_copy_semantics_[1],ori_content_,offset_,b2r_,last_index_)
+                    self.__update_history__(self.client_req_,self.one_copy_semantics_[0],success=True)
+                    self.__update_log__(
+                        self.one_copy_semantics_[0],"Modified from %s Operation" % (self.client_req_))
             else:
-                serv_file = open(self.server_dir_+k)
-                serv_content = serv_file.read()
-                offset_,ori_content_,last_index_ = v[0],v[1],v[2]
-                if ori_content_ != serv_content[offset_:last_index_]:
-                    print("File %s updated in Cache through One_Copy_Semantics" % (k))
-                    self.__add__(k,serv_content[offset_:last_index_],offset_,last_index_)
-                serv_file.close()
-            self.__update_history__(self.client_req_,k,success=True)
-            self.__update_log__(k,"Modified from %s Operation" % (self.client_req_))
-        self.client_req_ = None
+                last_index_ = len(self.one_copy_semantics_[1])
+                if ori_content_ != self.one_copy_semantics_[1][offset_:b2r_]:
+                    print("File %s updated in Cache through One_Copy_Semantics" % (
+                        self.one_copy_semantics_[0]))
+                    ori_content_ = self.one_copy_semantics_[1][offset_:b2r_]
+                    self.__update_history__(self.client_req_,self.one_copy_semantics_[0],success=True)
+                    self.__update_log__(
+                        self.one_copy_semantics_[0],"Modified from %s Operation" % (self.client_req_))
+                self.__add__(self.one_copy_semantics_[0],ori_content_,offset_,b2r_,last_index_)
+        self.__one_copy_semantics_reset__()
 
-    
+
+
+    '''
+    This function resets variables needed
+    for one copy semantics procedure.
+    '''
+    def __one_copy_semantics_reset__(self):
+        self.client_req_ = None
+        self.one_copy_semantics_ = None
+
     
     '''
     This function sycs the cache directory.
@@ -171,16 +185,14 @@ class Client_Cache:
     '''
     def __update_cache__(self):
         global CUR
-        if not self.storage_:
-            self.server_dir_ = None
         for k,v in list(self.storage_.items()):
-            if v[3] < CUR:
+            if v[4] < CUR:
                 self.__del__(k)
             else:
-                self.__one_copy_semantics__(k,v)
+                if self.one_copy_semantics_ != None:
+                    self.__one_copy_semantics__()
 
 
-        
 
     '''
     Thie function writes down a log

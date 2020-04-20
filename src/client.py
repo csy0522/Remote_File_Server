@@ -64,9 +64,6 @@ FUNC_INPUT = {
     }
 
 
-SD = "/home/csy/Documents/git/Remote_File_Server/Server_Directory/"
-
-
 '''
 This class creates a client for the user to gain the access of the local server directory
 specified with the hostname and the port number later in the main functino.
@@ -87,21 +84,6 @@ class Client:
         self.semantics_ = ''
         self.one_copy_semantics_ = ""
         self.status_ = 0
-
-
-
-    '''
-    This function updates the file that exists
-    in cache of all the clients.
-    It is executed when one file is updated through any client.
-    '''
-    def __one_copy_semantics__(self):
-        if self.cache_.__data_exist__(pathname,offset) == True:
-            self.__from_cache__(pathname,self.client_req_)
-            self.cache_.__WRITE__(pathname,offset,b2w)
-            self.status_ = 1
-        else:
-            print("file does not exist")
             
 
 
@@ -128,10 +110,10 @@ class Client:
             self.status_ = self.__receive__(int,False)
             if self.status_ == 2 or self.status_ == None: return
             if self.status_ == 1:
+                last_index = self.__receive__(int,False)
                 self.cache_.__add__(
                     self.inputs_[0],response,
-                    self.inputs_[1],self.inputs_[1]+len(response))
-                self.cache_.server_dir_ = self.__receive__(p=False)
+                    self.inputs_[1],self.inputs_[1]+len(response),last_index)
             
 
 
@@ -148,10 +130,13 @@ class Client:
         for i in self.inputs_:
             self.__send__(i)
             
-        self.__receive__()
+        server_msg = self.__receive__()
         if self.status_ == 2 or self.status_ == None: return
         self.status_ = self.__receive__(int,False)
         if self.status_ == 2 or self.status_ == None: return
+
+        if self.status_ == 1:
+            self.cache_.one_copy_semantics_ = [self.inputs_[0],server_msg]
 
 
 
@@ -168,13 +153,7 @@ class Client:
         if self.__receive__(int,False) == 1:
             if self.__receive__(int,False) == 1:
 
-                serv_dir = self.__receive__(p=False)
-                
-                ori_file = open(serv_dir+self.inputs_[0])
-                ori_content = ori_file.read()
-                ori_file.close()
-
-                self.__monitoring__(serv_dir,self.inputs_[0],self.inputs_[1],ori_content)
+                self.__monitoring__(self.inputs_[0],self.inputs_[1])
                 self.status_ = 1
             else:
                 self.__receive__()
@@ -189,24 +168,20 @@ class Client:
     This is an assistnant function for MONITOR operation.
     It constantly receives the updates / changes of the file specified.
     '''
-    def __monitoring__(self,serv_dir,filename,mon_time,ori_content):
+    def __monitoring__(self,filename,mon_time):
         des = datetime.now() + timedelta(seconds=mon_time)
         print("\nMonitoring...\n")
         while self.cache_.__get_current_time__() < des:
-            try:
-                new_file = open(serv_dir+filename)
-                new_content = new_file.read()
-            except FileNotFoundError:
-                print("\nFile \"%s\" is removed...\n" % (filename))
-                break
-            time.sleep(0.1)
-            if ori_content != new_content:
+            status = self.__receive__(int,False)
+            if status == 1:
                 print("==================================")
                 print("File \"%s\" Updated.\n" % (filename))
-                print("Updated Content: \n%s" % (new_content))
+                print("Updated Content: \n%s" % (self.__receive__(p=False)))
                 print("==================================")
-                ori_content = new_content
-            new_file.close()
+            else:
+                if status == 2:
+                    print("File \"%s\" is removed.\n" % (filename))
+                break
         print("...End of Monitoring.\n")
 
 
@@ -229,8 +204,8 @@ class Client:
         self.status_ = self.__receive__(int,False)
         if self.status_ == 2 or self.status_ == None: return
         if self.status_ == 1:
-            self.cache_.rename_ = self.__receive__(p=False)
-            if self.status_ == 2 or self.status_ == None: return
+            self.cache_.one_copy_semantics_ = [self.inputs_[0],self.inputs_[1]]
+            
     
 
 
@@ -246,10 +221,13 @@ class Client:
         for i in self.inputs_:
             self.__send__(i)
 
-        self.__receive__()
+        server_msg = self.__receive__()
         if self.status_ == 2 or self.status_ == None: return
         self.status_ = self.__receive__(int,False)
         if self.status_ == 2 or self.status_ == None: return
+
+        if self.status_ == 1:
+            self.cache_.one_copy_semantics_ = [self.inputs_[0],server_msg]
 
 
 
@@ -303,10 +281,13 @@ class Client:
         for i in self.inputs_:
             self.__send__(i)
             
-        self.__receive__()
+        server_msg = self.__receive__()
         if self.status_ == 2 or self.status_ == None: return
         self.status_ = self.__receive__(int,False)
         if self.status_ == 2 or self.status_ == None: return
+
+        if self.status_ == 1:
+            self.cache_.one_copy_semantics_ = [self.inputs_[0],server_msg]
 
 
     '''
@@ -610,12 +591,12 @@ class Client:
     def __start__(self):
         print('\n' + '\033[1m' + "================== Welcome to the Client Side ==================" + '\033[0m')
         print("\nThis program provides the tool for the user to access the local server directory\n\n")
-        self.host_ = input("Enter the address of the host ('q' to quit): ")
-        if self.host_.lower() in ['q','quit']:exit()
-        self.port_ = self.__check_int_input__("Enter the port number of the host ('q' to quit): ")
+##        self.host_ = input("Enter the address of the host ('q' to quit): ")
+##        if self.host_.lower() in ['q','quit']:exit()
+##        self.port_ = self.__check_int_input__("Enter the port number of the host ('q' to quit): ")
 ##        self.host_ = '192.168.0.103'
-##        self.host_ = '192.168.0.104'
-##        self.port_ = 9090
+        self.host_ = '192.168.0.104'
+        self.port_ = 9090
         self.server_ = (self.host_, self.port_)
         print("\nThe client will be able to send request to: ")
         print("Server: " + '\033[1m' + self.host_ + '\033[0m' + "\t Port: " + '\033[1m' + str(self.port_) + '\033[0m' + "\n")
@@ -655,6 +636,8 @@ Before running, please specify:
 if __name__ == "__main__":
     
     client = Client()
+
+    
     
     args = client.__get_args__()
     client.__process_args__(args)

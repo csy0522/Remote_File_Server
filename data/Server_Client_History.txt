@@ -1477,3 +1477,8 @@ Client: 192.168.0.104	Port: 9090	Request: DISAPPEAR	Succeeded	Time: 2020-04-19 2
 Client: 192.168.0.104	Port: 9090	Request: READ file "test.txt" Succeeded	Time: 2020-04-19 20:04:55
 Client: 192.168.0.104	Port: 9090	Request: WRITE file "test.txt" Succeeded	Time: 2020-04-19 20:05:13
 Client: 192.168.0.104	Port: 9090	Request: READ file "sdf" Failed	Time: 2020-04-19 20:06:50
+Client: 192.168.0.103	Port: 9090	Request: LS file "ALL" Succeeded	Time: 2020-04-19 23:22:53
+Client: 192.168.0.103	Port: 9090	Request: LS file "ALL" Succeeded	Time: 2020-04-19 23:22:55
+Client: 192.168.0.103	Port: 9090	Request: READ file "test.txt" Succeeded	Time: 2020-04-19 23:23:22
+Client: 192.168.0.103	Port: 9090	Request: ERASE file "5" Failed	Time: 2020-04-19 23:23:33
+Client: 192.168.0.103	Port: 9090	Request: MONITOR file "test.txt" Succeeded	Time: 2020-04-19 23:34:43
