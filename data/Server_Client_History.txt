@@ -1973,3 +1973,7 @@ Client: 192.168.0.104	Port: 9999	Request: ERASE file "test.txt" Succeeded	Time: 
 Client: 192.168.0.104	Port: 9999	Request: WRITE file "test.txt" Succeeded	Time: 2020-04-21 23:20:34
 Client: 192.168.0.104	Port: 9999	Request: DISAPPEAR	Succeeded	Time: 2020-04-21 23:20:38
 Client: 192.168.0.104	Port: 9999	Request: DISAPPEAR	Succeeded	Time: 2020-04-21 23:20:40
+Client: 192.168.0.104	Port: 9999	Request: LS	Succeeded	Time: 2020-04-21 23:46:32
+Client: 192.168.0.104	Port: 9999	Request: DISAPPEAR	Succeeded	Time: 2020-04-21 23:46:34
+Client: 192.168.0.104	Port: 9999	Request: DELETE file "test.txt" Succeeded	Time: 2020-04-21 23:46:45
+Client: 192.168.0.104	Port: 9999	Request: DISAPPEAR	Succeeded	Time: 2020-04-21 23:46:46
