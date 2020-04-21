@@ -161,3 +161,15 @@ Client: 192.168.0.104	Request: READ"test.txt"	Succeed	2020-04-20 19:21:33
 Client: 192.168.0.104	Request: ERASE"test.txt"	Succeed	2020-04-20 19:21:39
 Client: 192.168.0.104	Request: WRITE"test.txt"	Succeed	2020-04-20 20:11:45
 Client: 192.168.0.104	Request: READ"test.txt"	Succeed	2020-04-20 20:12:18
+Client: 192.168.0.104	Request: READ"world.txt"	Succeed	2020-04-21 22:06:36
+Client: 192.168.0.104	Request: WRITE"world.txt"	Succeed	2020-04-21 22:06:59
+Client: 192.168.0.104	Request: WRITE"world.txt"	Succeed	2020-04-21 22:07:06
+Client: 192.168.0.104	Request: WRITE"world.txt"	Succeed	2020-04-21 22:07:15
+Client: 192.168.0.104	Request: WRITE"world.txt"	Succeed	2020-04-21 22:11:32
+Client: 192.168.0.104	Request: REPLACE"world.txt"	Succeed	2020-04-21 22:11:37
+Client: 192.168.0.104	Request: WRITE"hello.txt"	Succeed	2020-04-21 22:28:21
+Client: 192.168.0.104	Request: WRITE"hello.txt"	Succeed	2020-04-21 22:30:47
+Client: 192.168.0.104	Request: WRITE"hello.txt"	Succeed	2020-04-21 22:32:29
+Client: 192.168.0.104	Request: WRITE"hello.txt"	Succeed	2020-04-21 22:32:37
+Client: 192.168.0.104	Request: WRITE"world.txt"	Succeed	2020-04-21 22:52:42
+Client: 192.168.0.104	Request: WRITE"world.txt"	Succeed	2020-04-21 22:56:58

@@ -1322,3 +1322,45 @@ File: hello.txt	Created	2020-04-21 19:49:08
 File: hello.txt	Deleted	2020-04-21 19:49:28
 File: world.txt	Created	2020-04-21 20:23:59
 File: world.txt	Deleted	2020-04-21 20:24:19
+File: world.txt	Created	2020-04-21 22:06:28
+File: world.txt	Created	2020-04-21 22:06:46
+File: world.txt	Modified from WRITE Operation	2020-04-21 22:06:59
+File: world.txt	Created	2020-04-21 22:06:59
+File: world.txt	Modified from WRITE Operation	2020-04-21 22:07:06
+File: world.txt	Created	2020-04-21 22:07:06
+File: world.txt	Modified from WRITE Operation	2020-04-21 22:07:15
+File: world.txt	Created	2020-04-21 22:07:15
+File: world.txt	Deleted	2020-04-21 22:07:35
+File: world.txt	Created	2020-04-21 22:11:20
+File: world.txt	Created	2020-04-21 22:11:23
+File: world.txt	Modified from WRITE Operation	2020-04-21 22:11:32
+File: world.txt	Created	2020-04-21 22:11:32
+File: world.txt	Modified from REPLACE Operation	2020-04-21 22:11:37
+File: world.txt	Created	2020-04-21 22:11:37
+File: world.txt	Deleted	2020-04-21 22:11:57
+File: hello.txt	Created	2020-04-21 22:28:11
+File: hello.txt	Modified from WRITE Operation	2020-04-21 22:28:21
+File: hello.txt	Created	2020-04-21 22:28:21
+File: hello.txt	Deleted	2020-04-21 22:28:41
+File: hello.txt	Created	2020-04-21 22:30:27
+File: hello.txt	Created	2020-04-21 22:30:42
+File: hello.txt	Modified from WRITE Operation	2020-04-21 22:30:47
+File: hello.txt	Created	2020-04-21 22:30:47
+File: hello.txt	Deleted	2020-04-21 22:30:47
+File: hello.txt	Deleted	2020-04-21 22:31:07
+File: hello.txt	Created	2020-04-21 22:32:22
+File: hello.txt	Modified from WRITE Operation	2020-04-21 22:32:29
+File: hello.txt	Created	2020-04-21 22:32:29
+File: hello.txt	Modified from WRITE Operation	2020-04-21 22:32:37
+File: hello.txt	Created	2020-04-21 22:32:37
+File: hello.txt	Deleted	2020-04-21 22:32:57
+File: world.txt	Created	2020-04-21 22:52:32
+File: world.txt	Modified from WRITE Operation	2020-04-21 22:52:42
+File: world.txt	Created	2020-04-21 22:52:42
+File: world.txt	Created	2020-04-21 22:56:46
+File: world.txt	Created	2020-04-21 22:56:51
+File: world.txt	Modified from WRITE Operation	2020-04-21 22:56:58
+File: world.txt	Created	2020-04-21 22:56:58
+File: world.txt	Created	2020-04-21 23:11:43
+File: world.txt	Deleted	2020-04-21 23:12:03
+File: world.txt	Created	2020-04-21 23:15:21

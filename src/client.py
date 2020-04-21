@@ -77,7 +77,6 @@ class Client:
         self.host_ = None
         self.port_ = None
         self.server_ = None
-        self.server_addr_ = None
         self.socket_ = self.__create_socket__()
         self.cache_ = self.__create_cache__()
         self.inputs_ = []
@@ -175,10 +174,9 @@ class Client:
                 print("File \"%s\" Updated.\n" % (filename))
                 print("Updated Content: \n%s" % (self.__receive__(p=False)))
                 print("==================================")
-            elif status == 2:
-                print("File \"%s\" is removed.\n" % (filename))
-                break
-            elif status == 0:
+            else:
+                if status == 2:
+                    print("File \"%s\" is removed.\n" % (filename))
                 break
         print("...End of Monitoring.\n")
 
@@ -312,7 +310,6 @@ class Client:
         self.__send__(SERV_OP[self.request_])
         self.__receive__()
         if self.status_ == 2 or self.status_ == None: return
-##        self.status_ = 1
         self.status_ = self.__receive__(int,False)
         if self.status_ == 2 or self.status_ == None: return
 
@@ -376,7 +373,7 @@ class Client:
     This function sends the message / request to the server.
     '''
     def __send__(self,msg):
-        if type(msg) == int:
+        if type(msg) != str:
             msg = str(msg)
         bufsize = self.__get_bufsize__(msg)
         self.socket_.sendto(__mar__(bufsize),self.server_)
@@ -391,12 +388,12 @@ class Client:
     based on the optimal bufsize.
     if timeout, return a specific value for status update.
     '''
-    def __receive__(self,d_type=str,p=True):
+    def __receive__(self,d=str,p=True):
         timeout = select.select([self.socket_],[],[],TIMEOUT)
         if timeout[0]:
-            bufsize,self.server_addr_ = self.socket_.recvfrom(12)
-            msg, self.server_addr_ = self.socket_.recvfrom(__unmar__(bufsize,int))
-            msg = __unmar__(msg,d_type)
+            bufsize,self.server_ = self.socket_.recvfrom(12)
+            msg, self.server_ = self.socket_.recvfrom(__unmar__(bufsize,int))
+            msg = __unmar__(msg,d)
             if p == True and msg != None:
                 print("\n%s" % str(msg))
             return msg

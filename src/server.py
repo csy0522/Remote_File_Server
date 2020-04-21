@@ -150,7 +150,7 @@ class Server():
                 ori_file.close()
 
                 monitor_thread_ = threading.Thread(target=self.__monitoring__,
-                                                   args=(ori_content,mon_time,client))
+                                                   args=(self.req_file_,ori_content,mon_time,client))
                 monitor_thread_.start()
                 self.status_ = 1
             else:
@@ -169,24 +169,25 @@ class Server():
     This is an assistnant function for MONITOR operation.
     It constantly receives the updates / changes of the file specified.
     '''
-    def __monitoring__(self,ori_content,mon_time,client):
+    def __monitoring__(self,file,ori_content,mon_time,client):
         global CUR
         des = datetime.now() + timedelta(seconds=mon_time)
+        new_file = None
         while CUR < des:
+            time.sleep(0.5)
             try:
-                new_file = open(self.serv_dir_+self.req_file_)
+                new_file = open(self.serv_dir_+file)
                 new_content = new_file.read()
-                
+                new_file.close()
             except FileNotFoundError:
                 self.__send__(2,client)
                 break
             if ori_content != new_content:
-                self.__send__(1,client)
-                self.__send__(new_content,client)
-                time.sleep(0.1)
                 ori_content = new_content
-        new_file.close()
-        self.__send__(0,client)
+                self.__send__(1,client)
+                self.__send__(ori_content,client)
+        if CUR >= des:
+            self.__send__(0,client)
 
 
         
@@ -372,7 +373,7 @@ class Server():
     def __LS__(self,client):
         self.server_msg_ = "List all files on Server Directory"
         print('\n\t' + self.server_msg_ + '\n')
-        self.req_file_ = "ALL"
+##        self.req_file_ = "ALL"
 
         files = '\n' + "==========" + " Server Directory " + "==========" + '\n'
         for c in os.listdir(self.serv_dir_):
@@ -543,7 +544,7 @@ class Server():
         elif self.status_ == 2:
             succ = 'Timeout'
         curr_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        if self.status_ == 2 or self.client_req_ == "DISAPPEAR":
+        if self.status_ == 2 or self.client_req_ == "DISAPPEAR" or self.client_req_ == "LS":
             self.history_.write("Client: " + 
             client[0] + "\tPort: " +
             str(self.port_) + "\tRequest: " + self.client_req_ +
@@ -587,7 +588,7 @@ class Server():
             self.__append_client__(client)
             print("Client \"%s\" requested to:" % (client[0]))
 ##            req = threading.Thread(
-##                eval("self.__" + self.client_req_ + "__")())
+##                eval("self.__" + self.client_req_ + "__")(client))
 ##            req.start()
             eval("self.__" + self.client_req_ + "__")(client)
 
