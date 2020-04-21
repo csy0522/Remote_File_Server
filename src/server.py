@@ -142,7 +142,6 @@ class Server():
 
         print("\n\t{} \"{}\"\n".format(self.client_req_,self.req_file_))
         if self.__check_server_directory__(self.req_file_):
-            self.__send__(1,client)
             if mon_time < TIMEOUT:
                 self.__send__(1,client)
                 
@@ -156,8 +155,9 @@ class Server():
                 self.status_ = 1
             else:
                 self.__send__(0,client)
-                self.__send__("Monitoring time must be smaller than timeout (< %d seconds)" % (
-                    TIMEOUT),client)
+                self.server_msg_ = "Monitoring time must be smaller than timeout (< %d seconds)" % (
+                    TIMEOUT)
+                self.__send__(self.server_msg_,client)
         else:
             self.__send__(0,client)
             self.__send__(self.server_msg_,client)
@@ -176,7 +176,7 @@ class Server():
             try:
                 new_file = open(self.serv_dir_+self.req_file_)
                 new_content = new_file.read()
-                new_file.close()
+                
             except FileNotFoundError:
                 self.__send__(2,client)
                 break
@@ -185,7 +185,7 @@ class Server():
                 self.__send__(new_content,client)
                 time.sleep(0.1)
                 ori_content = new_content
-        
+        new_file.close()
         self.__send__(0,client)
 
 
@@ -416,18 +416,6 @@ class Server():
     based on the optimal bufsize.
     if timeout, return a specific value for status update.
     '''
-##    def __receive__(self, d_type=str):
-##        timeout = select.select([self.socket_],[],[],TIMEOUT)
-##        if timeout[0]:
-##            bufsize,self.client_ = self.socket_.recvfrom(12)
-##            msg,self.client_ = self.socket_.recvfrom(__unmar__(bufsize,int))
-##            print(self.client_)
-##            msg = __unmar__(msg,d_type)
-##            return msg
-##        else:
-##            self.status_ = 2
-
-
     def __receive__(self,d=str,c=False):
         timeout = select.select([self.socket_],[],[],TIMEOUT)
         if timeout[0]:

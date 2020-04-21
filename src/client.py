@@ -152,13 +152,9 @@ class Client:
         for i in self.inputs_:
             self.__send__(i)
         if self.__receive__(int,False) == 1:
-            if self.__receive__(int,False) == 1:
 
-                self.__monitoring__(self.inputs_[0],self.inputs_[1])
-                self.status_ = 1
-            else:
-                self.__receive__()
-                if self.status_ == 2 or self.status_ == None: return
+            self.__monitoring__(self.inputs_[0],self.inputs_[1])
+            self.status_ = 1
         else:
             self.__receive__()
             if self.status_ == 2 or self.status_ == None: return
@@ -179,9 +175,10 @@ class Client:
                 print("File \"%s\" Updated.\n" % (filename))
                 print("Updated Content: \n%s" % (self.__receive__(p=False)))
                 print("==================================")
-            else:
-                if status == 2:
-                    print("File \"%s\" is removed.\n" % (filename))
+            elif status == 2:
+                print("File \"%s\" is removed.\n" % (filename))
+                break
+            elif status == 0:
                 break
         print("...End of Monitoring.\n")
 
@@ -315,6 +312,7 @@ class Client:
         self.__send__(SERV_OP[self.request_])
         self.__receive__()
         if self.status_ == 2 or self.status_ == None: return
+##        self.status_ = 1
         self.status_ = self.__receive__(int,False)
         if self.status_ == 2 or self.status_ == None: return
 
@@ -591,13 +589,13 @@ class Client:
     def __start__(self):
         print('\n' + '\033[1m' + "================== Welcome to the Client Side ==================" + '\033[0m')
         print("\nThis program provides the tool for the user to access the local server directory\n\n")
-        self.host_ = input("Enter the address of the host ('q' to quit): ")
-        if self.host_.lower() in ['q','quit']:exit()
-        self.port_ = self.__check_int_input__("Enter the port number of the host ('q' to quit): ")
-        self.cache_.time_out_ = self.__check_int_input__("Enter Cache timeout ('q' to quit): ")
+##        self.host_ = input("Enter the address of the host ('q' to quit): ")
+##        if self.host_.lower() in ['q','quit']:exit()
+##        self.port_ = self.__check_int_input__("Enter the port number of the host ('q' to quit): ")
+##        self.cache_.time_out_ = self.__check_int_input__("Enter Cache timeout ('q' to quit): ")
 ##        self.host_ = '192.168.0.103'
-##        self.host_ = '192.168.0.104'
-##        self.port_ = 9999
+        self.host_ = '192.168.0.104'
+        self.port_ = 9999
         self.server_ = (self.host_, self.port_)
         print("\nThe client will be able to send request to: ")
         print("Server: " + '\033[1m' + self.host_ + '\033[0m' + "\t Port: " + '\033[1m' + str(self.port_) + '\033[0m' + "\n")
