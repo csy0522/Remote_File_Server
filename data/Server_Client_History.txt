@@ -1653,3 +1653,19 @@ Client: 192.168.0.104	Port: 9999	Request: LS file "ALL" Succeeded	Time: 2020-04-
 Client: 192.168.0.104	Port: 9999	Request: READ file "hello.txt" Failed	Time: 2020-04-21 20:23:46
 Client: 192.168.0.104	Port: 9999	Request: READ file "world.txt" Succeeded	Time: 2020-04-21 20:23:59
 Client: 192.168.0.104	Port: 9999	Request: DISAPPEAR	Succeeded	Time: 2020-04-21 20:24:58
+Client: 192.168.0.104	Port: 9999	Request: LS file "ALL" Succeeded	Time: 2020-04-21 20:32:12
+Client: 192.168.0.104	Port: 9999	Request: MONITOR file "world.txt" Succeeded	Time: 2020-04-21 20:32:14
+Client: 192.168.0.104	Port: 9999	Request: MONITOR file "world.txt" Succeeded	Time: 2020-04-21 20:32:28
+Client: 192.168.0.104	Port: 9999	Request: DISAPPEAR	Succeeded	Time: 2020-04-21 20:32:50
+Client: 192.168.0.103	Port: 9999	Request: LS file "ALL" Succeeded	Time: 2020-04-21 20:51:39
+Client: 192.168.0.104	Port: 9999	Request: MONITOR file "world.txt" Succeeded	Time: 2020-04-21 20:52:26
+Client: 192.168.0.103	Port: 9999	Request: WRITE file "world.txt" Succeeded	Time: 2020-04-21 20:52:46
+Client: 192.168.0.103	Port: 9999	Request: DISAPPEAR	Succeeded	Time: 2020-04-21 20:52:52
+Client: 192.168.0.104	Port: 9999	Request: LS file "ALL" Succeeded	Time: 2020-04-21 20:54:07
+Client: 192.168.0.104	Port: 9999	Request: LS file "ALL" Succeeded	Time: 2020-04-21 20:54:08
+Client: 192.168.0.104	Port: 9999	Request: LS file "ALL" Succeeded	Time: 2020-04-21 20:54:09
+Client: 192.168.0.103	Port: 9999	Request: LS file "ALL" Succeeded	Time: 2020-04-21 20:54:26
+Client: 192.168.0.104	Port: 9999	Request: MONITOR file "world.txt" Succeeded	Time: 2020-04-21 20:54:44
+Client: 192.168.0.103	Port: 9999	Request: WRITE file "world.txt" Succeeded	Time: 2020-04-21 20:54:54
+Client: 192.168.0.103	Port: 9999	Request: LS file "ALL" Succeeded	Time: 2020-04-21 20:54:57
+Client: 192.168.0.103	Port: 9999	Request: LS file "ALL" Succeeded	Time: 2020-04-21 20:54:58

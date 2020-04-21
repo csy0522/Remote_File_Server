@@ -128,12 +128,6 @@ class Server():
                 
         self.__send__(self.server_msg_,client)
         self.__send__(self.status_,client)
-        if self.status_ == 1:
-            for c in self.clients_:
-                if c != client:
-                    self.__send__('WRITE',c)
-                    self.__send__(self.req_file_,c)
-                    self.__send__(self.server_msg_,c)
                 
 
 
