@@ -217,10 +217,7 @@ class Server():
                 
         self.__send__(self.server_msg_,client)
         self.__send__(self.status_,client)
-        if self.status_ == 1:
-            self.__send__(new_name,client)
-        
-
+    
 
             
         
