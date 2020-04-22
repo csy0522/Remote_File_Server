@@ -9,7 +9,7 @@ Use any python IDE to open the project. I personally use python IDLE.You can dow
 
 ### Installation
 
-...
+- None
 
 ## Running the tests
 
@@ -33,7 +33,7 @@ python client.py <invocation semantics> (ex: "At-Most-Once" or "At-Least-Once")
 ![Actual V.S Prediction](/data/client_start.png)
 
 - For <invocation semantics>, type "amo" for "At-Most-Once" and "alo" for "At-Least-Once".
-- When client starts, under the welcome line, it asks the user to input the address of the host which can be found on the server side, the port number which should match the one for the server, and the amount of time a file or a content is able to stay in Cache.
+- When client starts, under the welcome line, it asks the user to input the address of the host which can be found on the server side, the port number which should match the one for the server, and the amount of time in seconds a file or a content is able to stay in Cache.
 - After all the inputs are specified, the terminal will show all the operations and their descriptions available for the user to request from the server. Some of the operations include Read, Write, Monitor, etc.
 - At the bottom, the client will ask the user to input the request.
   
