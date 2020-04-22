@@ -25,7 +25,6 @@ def __marshall__(s):
         hex_list.append(h)
     return b"".join(hex_list)
 
-
 """
 This function decodes the messages
 shared by the server and the clients.
@@ -47,7 +46,6 @@ def __unmarshall__(b, d_t=str):
         return bool("".join(char_list))
     return "".join(char_list)
 
-
 """
 This function converts integer to hexadecimal.
 """
@@ -56,7 +54,6 @@ def __int_to_hex__(a):
     if r in list(HEX_DIC.keys()):
         r = HEX_DIC[r]
     return r
-
 
 """
 This function converts hexadecimal to integer.
