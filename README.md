@@ -46,7 +46,7 @@ python client.py <invocation semantics> (ex: "At-Most-Once" or "At-Least-Once")
 ![Server_Succ](/images/server_successful.png)
 ![Client_Succ](/images/client_successful.png)
 
-- The following are the terminal views when an unsuccessful request has been sent and returned.
+- The following are the terminal views when an unsuccessful request has been sent and returned (Reading a text file that does not exist in the server directory).
 ![Server_Fail](/images/server_fail.png)
 ![Client_Fail](/images/client_fail.png)
 
