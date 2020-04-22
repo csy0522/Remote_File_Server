@@ -666,7 +666,7 @@ if __name__ == "__main__":
 
     """Server Directory in Linux Machine"""
     linux_machine_directory = (
-        "/home/csy/Documents/git/Remote_File_Server/Server_Directory/"
+        "./../Server_Directory/"
     )
 
     """Server Directory in Windows Machine"""

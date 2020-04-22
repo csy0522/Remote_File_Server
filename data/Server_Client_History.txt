@@ -2022,3 +2022,20 @@ Client: 192.168.0.104	Port: 9999	Request: WRITE file "hello.txt" Succeeded	Time:
 Client: 192.168.0.104	Port: 9999	Request: ERASE file "hello.txt" Succeeded	Time: 2020-04-22 10:51:40
 Client: 192.168.0.104	Port: 9999	Request: MONITOR file "hello.txt" Succeeded	Time: 2020-04-22 10:52:06
 Client: 192.168.0.104	Port: 9999	Request: DELETE file "hello.txt" Succeeded	Time: 2020-04-22 10:52:16
+Client: 192.168.0.104	Port: 9090	Request: READ file "hello.txt" Failed	Time: 2020-04-22 14:25:16
+Client: 192.168.0.104	Port: 9090	Request: LS	Succeeded	Time: 2020-04-22 14:25:17
+Client: 192.168.0.104	Port: 9090	Request: CREATE file "hello.txt" Succeeded	Time: 2020-04-22 14:25:20
+Client: 192.168.0.104	Port: 9090	Request: LS	Succeeded	Time: 2020-04-22 14:25:31
+Client: 192.168.0.104	Port: 9090	Request: READ file "hello.txt" Succeeded	Time: 2020-04-22 14:25:34
+Client: 192.168.0.104	Port: 9090	Request: ERASE file "hello.txt" Succeeded	Time: 2020-04-22 14:25:39
+Client: 192.168.0.104	Port: 9090	Request: MONITOR file "hello.txt" Succeeded	Time: 2020-04-22 14:26:30
+Client: 192.168.0.104	Port: 9090	Request: DISAPPEAR	Succeeded	Time: 2020-04-22 14:26:37
+Client: 192.168.0.104	Port: 9999	Request: READ file "hello.txt" Succeeded	Time: 2020-04-22 14:45:25
+Client: 192.168.0.104	Port: 9999	Request: CREATE file "test.txt" Succeeded	Time: 2020-04-22 14:46:00
+Client: 192.168.0.104	Port: 9999	Request: DISAPPEAR	Succeeded	Time: 2020-04-22 14:46:09
+Client: 192.168.0.104	Port: 9999	Request: CREATE file "test.txt" Succeeded	Time: 2020-04-22 14:47:01
+Client: 192.168.0.104	Port: 9999	Request: DISAPPEAR	Succeeded	Time: 2020-04-22 14:47:28
+Client: 192.168.0.104	Port: 9999	Request: READ file "hello_world.txt" Failed	Time: 2020-04-22 15:08:59
+Client: 192.168.0.104	Port: 9999	Request: LS	Succeeded	Time: 2020-04-22 15:19:11
+Client: 192.168.0.104	Port: 9999	Request: LS	Succeeded	Time: 2020-04-22 15:19:55
+Client: 192.168.0.104	Port: 9999	Request: DISAPPEAR	Succeeded	Time: 2020-04-22 15:20:01

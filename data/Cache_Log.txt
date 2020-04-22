@@ -1373,3 +1373,9 @@ File: hello.txt	Created	2020-04-22 10:41:32
 File: hello.txt	Deleted	2020-04-22 10:42:12
 File: hello.txt	Created	2020-04-22 10:42:18
 File: hello.txt	Deleted	2020-04-22 10:42:58
+File: hello.txt	Created	2020-04-22 14:25:34
+File: hello.txt	Modified from ERASE Operation	2020-04-22 14:25:39
+File: hello.txt	Created	2020-04-22 14:25:39
+File: hello.txt	Deleted	2020-04-22 14:26:19
+File: hello.txt	Created	2020-04-22 14:45:25
+File: hello.txt	Deleted	2020-04-22 14:45:55
