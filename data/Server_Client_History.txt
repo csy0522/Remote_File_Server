@@ -2039,3 +2039,6 @@ Client: 192.168.0.104	Port: 9999	Request: READ file "hello_world.txt" Failed	Tim
 Client: 192.168.0.104	Port: 9999	Request: LS	Succeeded	Time: 2020-04-22 15:19:11
 Client: 192.168.0.104	Port: 9999	Request: LS	Succeeded	Time: 2020-04-22 15:19:55
 Client: 192.168.0.104	Port: 9999	Request: DISAPPEAR	Succeeded	Time: 2020-04-22 15:20:01
+Client: 192.168.0.104	Port: 9999	Request: READ file "test.txt" Succeeded	Time: 2020-04-22 15:49:42
+Client: 192.168.0.104	Port: 9999	Request: READ file "test.txt" Succeeded	Time: 2020-04-22 15:50:28
+Client: 192.168.0.104	Port: 9999	Request: READ file "not_in_dir.txt" Failed	Time: 2020-04-22 15:51:14
