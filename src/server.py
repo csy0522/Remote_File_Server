@@ -633,6 +633,7 @@ class Server:
         if args.port == None:
             print("You need to specify the port number.")
             print("Type '--help' for help")
+            exit()
         else:
             try:
                 args.port = int(args.port)
@@ -641,9 +642,11 @@ class Server:
             except ValueError:
                 print("The value must be integer!")
                 print("Please try again!")
+                exit()
             except PermissionError:
                 print("The port is reserved!")
                 print("Please choose a different port number!")
+                exit()
 
 
 """

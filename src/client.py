@@ -620,9 +620,11 @@ class Client:
             if args.Semantics == None:
                 print("You need to specify the invocation semantics.")
                 print("Type '--help' for help")
+                exit()
             else:
                 print("Invalid invocation semantics")
                 print("Please type either At-Most-Once or At-Least-Once ('amo'/'alo')")
+                exit()
         else:
             self.semantics_ = args.Semantics
 
