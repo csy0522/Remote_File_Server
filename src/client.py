@@ -641,13 +641,13 @@ class Client:
         print(
             "\nThis program provides the tool for the user to access the local server directory\n\n"
         )
-        ##        self.host_ = input("Enter the address of the host ('q' to quit): ")
-        ##        if self.host_.lower() in ['q','quit']:exit()
-        ##        self.port_ = self.__check_int_input__("Enter the port number of the host ('q' to quit): ")
-        ##        self.cache_.time_out_ = self.__check_int_input__("Enter Cache timeout ('q' to quit): ")
-        ##        self.host_ = '192.168.0.103'
-        self.host_ = "192.168.0.104"
-        self.port_ = 9999
+        self.host_ = input("Enter the address of the host ('q' to quit): ")
+        if self.host_.lower() in ['q','quit']:exit()
+        self.port_ = self.__check_int_input__("Enter the port number of the host ('q' to quit): ")
+        self.cache_.time_out_ = self.__check_int_input__("Enter Cache timeout ('q' to quit): ")
+##        self.host_ = '192.168.0.103'
+##        self.host_ = "192.168.0.104"
+##        self.port_ = 9999
         self.server_ = (self.host_, self.port_)
         print("\nThe client will be able to send request to: ")
         print(
