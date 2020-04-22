@@ -20,7 +20,7 @@ Use any python IDE to open the project. I personally use python IDLE.You can dow
 ```
 python server.py <port number> (ex: 9090)
 ```
-![Server_Start](/images/server_start.png)
+![Server_Start](/images/server_starts.png)
 
 - Before starting the server, please specify a Server_Directory in the main function. Otherwise, it will use the default Server Directory.
 - For <port number>, select a port number that is not registered. An already registered or an invalid input will be detected and the program will not be executed.
@@ -30,7 +30,7 @@ python server.py <port number> (ex: 9090)
 ```
 python client.py <invocation semantics> (ex: "At-Most-Once" or "At-Least-Once")
 ```
-![Client_Start](/images/client_start.png)
+![Client_Start](/images/client_starts.png)
 
 - For <invocation semantics>, type "amo" for "At-Most-Once" and "alo" for "At-Least-Once".
 - When client starts, under the welcome line, it asks the user to input the address of the host which can be found on the server side, the port number which should match the one for the server, and the amount of time in seconds a file or a content is able to stay in Cache.
