@@ -20,7 +20,7 @@ Use any python IDE to open the project. I personally use python IDLE.You can dow
 ```
 python server.py <port number> (ex: 9090)
 ```
-![Actual V.S Prediction](/data/server_start.png)
+![Server_Start](/images/server_start.png)
 
 - Before starting the server, please specify a Server_Directory in the main function. Otherwise, it will use the default Server Directory.
 - For <port number>, select a port number that is not registered. An already registered or an invalid input will be detected and the program will not be executed.
@@ -30,22 +30,22 @@ python server.py <port number> (ex: 9090)
 ```
 python client.py <invocation semantics> (ex: "At-Most-Once" or "At-Least-Once")
 ```
-![Actual V.S Prediction](/data/client_start.png)
+![Client_Start](/images/client_start.png)
 
 - For <invocation semantics>, type "amo" for "At-Most-Once" and "alo" for "At-Least-Once".
 - When client starts, under the welcome line, it asks the user to input the address of the host which can be found on the server side, the port number which should match the one for the server, and the amount of time in seconds a file or a content is able to stay in Cache.
 - After all the inputs are specified, the terminal will show all the operations and their descriptions available for the user to request from the server. Some of the operations include Read, Write, Monitor, etc.
 - At the bottom, the client will ask the user to input the request.
   
-![Actual V.S Prediction](/data/client_start.png)
+![Operations](/images/operations.png)
 
 **Sending Request, Receiving Response**
 - When the server receives the request and the corresponding parameters from the client, the server will analyze those request and parameters and decide whether or not the request will be successful. The server then sends the status of the request. It will either be "Success" or "Failed".
 
-![Actual V.S Prediction](/data/client_start.png)
-![Actual V.S Prediction](/data/client_start.png)
-![Actual V.S Prediction](/data/client_start.png)
-![Actual V.S Prediction](/data/client_start.png)
+![Server_Succ](/images/server_successful.png)
+![Client_Succ](/images/client_successful.png)
+![Server_Fail](/images/server_fail.png)
+![Client_Fail](/images/client_fail.png)
 
 - For more details, please download the code and try sending requests to the server.
 
