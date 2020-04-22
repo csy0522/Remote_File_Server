@@ -42,8 +42,11 @@ python client.py <invocation semantics> (ex: "At-Most-Once" or "At-Least-Once")
 **Sending Request, Receiving Response**
 - When the server receives the request and the corresponding parameters from the client, the server will analyze those request and parameters and decide whether or not the request will be successful. The server then sends the status of the request. It will either be "Success" or "Failed".
 
+- The following are the terminal views when a successful request has been sent and returned.
 ![Server_Succ](/images/server_successful.png)
 ![Client_Succ](/images/client_successful.png)
+
+- The following are the terminal views when an unsuccessful request has been sent and returned.
 ![Server_Fail](/images/server_fail.png)
 ![Client_Fail](/images/client_fail.png)
 
