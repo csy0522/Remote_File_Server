@@ -60,7 +60,6 @@ Choose your own Server Directory & transfer files remotely.
 ## Built With
 
 * [Python](https://www.python.org/) - The Programming Language
-* [socket](https://docs.python.org/3/library/socket.html) - Python Module Providing Access To the BSD Socket Interface
 
 ## Author
 
